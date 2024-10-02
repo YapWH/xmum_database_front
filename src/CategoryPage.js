@@ -10,6 +10,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme, ThemeProvider } from '@mui/material/styles';
 import DatasetCard from './DatasetCard';
+import { motion } from 'framer-motion';
 
 axios.defaults.baseURL = 'http://0.0.0.0:8000';
 
@@ -61,7 +62,13 @@ function CategoryPage() {
         <Grid container spacing={4}>
           {datasets.map((dataset, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
-              <DatasetCard dataset={dataset} onClick={handleCardClick} />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <DatasetCard dataset={dataset} onClick={handleCardClick} />
+              </motion.div>
             </Grid>
           ))}
         </Grid>

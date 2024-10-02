@@ -7,7 +7,16 @@ import {
   Grid,
   CircularProgress,
   Box,
+  TextField,
+  Button,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 import DatasetCard from './DatasetCard';
 
 function useQuery() {
@@ -17,50 +26,141 @@ function useQuery() {
 function SearchResults() {
   const query = useQuery();
   const navigate = useNavigate();
-  const searchQuery = query.get('query');
-  const searchField = query.get('field');
+  const initialSearchQuery = query.get('query') || '';
+  const initialSearchField = query.get('field') || 'title';
 
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [searchField, setSearchField] = useState(initialSearchField);
+  const [displayedQuery, setDisplayedQuery] = useState(initialSearchQuery);
 
   useEffect(() => {
-    const fetchSearchResults = async () => {
-      try {
-        const response = await axios.get(`/V1/Search?query=${searchQuery}&field=${searchField}`);
-        setResults(response.data.datasets);
-      } catch (error) {
-        console.error('Error fetching search results:', error);
-      }
-      setLoading(false);
-    };
+    if (initialSearchQuery) {
+      performSearch(initialSearchQuery, initialSearchField);
+    }
+  }, []);
 
-    fetchSearchResults();
-  }, [searchQuery, searchField]);
+  const performSearch = async (query, field) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/V1/Search?query=${query}&field=${field}`);
+      setResults(response.data.datasets);
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      setResults([]);
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = () => {
+    if (!searchQuery) {
+      alert('Please enter a search query');
+      return;
+    }
+    setDisplayedQuery(searchQuery);
+    navigate(`/search?query=${searchQuery}&field=${searchField}`);
+    performSearch(searchQuery, searchField);
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const handleDatasetClick = (title) => {
     navigate(`/dataset/${title}`);
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress color="secondary" />
-      </Box>
-    );
-  }
-
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>
-        Search Results for "{searchQuery}"
-      </Typography>
-      <Grid container spacing={3}>
-        {results.map((dataset, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <DatasetCard dataset={dataset} onClick={handleDatasetClick} />
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <Box sx={{ mb: 4 }}>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search datasets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Field</InputLabel>
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  label="Field"
+                >
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="author">Author</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleSearch}
+                sx={{ height: '56px' }}
+              >
+                Search
+              </Button>
+            </Grid>
           </Grid>
-        ))}
-      </Grid>
+        </Box>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress color="secondary" />
+          </Box>
+        ) : (
+          <>
+            {displayedQuery && (
+              <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>
+                Search Results for "{displayedQuery}"
+              </Typography>
+            )}
+            {results.length > 0 ? (
+              <Grid container spacing={3}>
+                {results.map((dataset, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <DatasetCard dataset={dataset} onClick={handleDatasetClick} />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              displayedQuery && (
+                <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>
+                  No results found for "{displayedQuery}"
+                </Typography>
+              )
+            )}
+          </>
+        )}
+      </motion.div>
     </Container>
   );
 }
