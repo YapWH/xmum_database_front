@@ -3,30 +3,34 @@ import axios from 'axios';
 import {
   Container,
   Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
   Typography,
   CircularProgress,
   Box,
 } from '@mui/material';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme, ThemeProvider } from '@mui/material/styles';
+import DatasetCard from './DatasetCard';
 
 axios.defaults.baseURL = 'http://0.0.0.0:8000';
 
 function CategoryPage() {
   const { category } = useParams();
   const theme = useTheme();
+  const navigate = useNavigate();
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDatasets = async () => {
       try {
-        const response = await axios.get(`/V1/Getlist?category=${category}`);
-        setDatasets(response.data.datasets);
+        const titlesResponse = await axios.get(`/V1/Gettitles?category=${category}`);
+        const titles = titlesResponse.data.titles;
+        const datasetsPromises = titles.map(async (titleObj) => {
+          const detailResponse = await axios.get(`/V1/Detailed?title=${titleObj.title}`);
+          return detailResponse.data;
+        });
+        const datasets = await Promise.all(datasetsPromises);
+        setDatasets(datasets);
       } catch (error) {
         console.error('Error fetching datasets:', error);
       }
@@ -44,6 +48,10 @@ function CategoryPage() {
     );
   }
 
+  const handleCardClick = (title) => {
+    navigate(`/dataset/${title}`);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -53,21 +61,7 @@ function CategoryPage() {
         <Grid container spacing={4}>
           {datasets.map((dataset, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" component="h2" gutterBottom>
-                    {dataset.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {dataset.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Link to={`/dataset/${dataset.title}`} style={{ textDecoration: 'none' }}>
-                    <Button size="small" color="primary">View Details</Button>
-                  </Link>
-                </CardActions>
-              </Card>
+              <DatasetCard dataset={dataset} onClick={handleCardClick} />
             </Grid>
           ))}
         </Grid>
