@@ -6,6 +6,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DatasetCatalog from './DatasetCatalog';
 import DatasetDetail from './DatasetDetail';
 import CreateDataset from './CreateDataset';
+import HomePage from './Home';
 import { ThemeProviderComponent, useTheme } from './ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -54,7 +55,8 @@ function AppContent() {
       <Toolbar /> {/* This is to offset the fixed AppBar */}
       <Container>
         <Routes>
-          <Route path="/" element={<DatasetCatalog />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<DatasetCatalog />} />
           <Route path="/dataset/:id" element={<DatasetDetail />} />
           <Route path="/create" element={<CreateDataset />} />
         </Routes>
