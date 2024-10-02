@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Sun, Moon } from 'lucide-react'
 import Header from '@/components/Header'
@@ -47,48 +47,92 @@ const initialItems: Item[] = [
     downloads: 500,
     tags: ['nlp', 'machine learning']
   },
-  // Add more items as needed
+  {
+    id: '3',
+    title: 'Deep Learning Advances',
+    description: 'Recent advancements in deep learning techniques',
+    category: 'Articles',
+    subcategory: 'CV',
+    uploader: 'Alice Johnson',
+    dateAdded: '2023-06-01',
+    downloads: 750,
+    tags: ['deep learning', 'ai']
+  }
 ]
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>(initialItems)
-  const [filteredItems, setFilteredItems] = useState<Item[]>(initialItems)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All')
+  const [filters, setFilters] = useState({
+    category: 'All',
+    subcategory: 'All',
+    tags: [] as string[],
+    dateRange: 'All',
+    searchQuery: ''
+  })
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode)
     document.documentElement.classList.toggle('dark')
   }
 
-  const handleFilter = (filters: Partial<Item>) => {
-    const filtered = items.filter(item => {
-      return Object.entries(filters).every(([key, value]) => {
-        if (value === '') return true
-        if (key === 'tags') return (item[key] as string[]).includes(value as string)
-        return item[key as keyof Item] === value
-      })
-    })
-    setFilteredItems(filtered)
+  const handleFilter = (newFilters: typeof filters) => {
+    setFilters(newFilters)
   }
 
   const handleUpload = (newItem: Item) => {
     setItems([...items, newItem])
-    setFilteredItems([...filteredItems, newItem])
     setIsUploadModalOpen(false)
   }
+
+  const handleCategoryChange = (category: Category | 'All') => {
+    setActiveCategory(category)
+    setFilters({ ...filters, category })
+  }
+
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      const categoryMatch = filters.category === 'All' || item.category === filters.category
+      const subcategoryMatch = filters.subcategory === 'All' || item.subcategory === filters.subcategory
+      const tagsMatch = filters.tags.length === 0 || filters.tags.some(tag => item.tags.includes(tag))
+      const searchMatch = item.title.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      
+      let dateMatch = true
+      if (filters.dateRange !== 'All') {
+        const itemDate = new Date(item.dateAdded)
+        const now = new Date()
+        switch (filters.dateRange) {
+          case 'Last 24 hours':
+            dateMatch = now.getTime() - itemDate.getTime() <= 24 * 60 * 60 * 1000
+            break
+          case 'Last 7 days':
+            dateMatch = now.getTime() - itemDate.getTime() <= 7 * 24 * 60 * 60 * 1000
+            break
+          case 'Last 30 days':
+            dateMatch = now.getTime() - itemDate.getTime() <= 30 * 24 * 60 * 60 * 1000
+            break
+        }
+      }
+
+      return categoryMatch && subcategoryMatch && tagsMatch && dateMatch && searchMatch
+    })
+  }, [items, filters])
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
       <div className="container mx-auto px-4 py-8">
-        <Header />
         <div className="flex justify-between items-center mb-8">
-          <Button onClick={() => setIsUploadModalOpen(true)}>Upload Item</Button>
-          <Button onClick={toggleTheme} variant="outline" size="icon">
-            {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
-          </Button>
+          <Header activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+          <div className="flex items-center space-x-4">
+            <Button onClick={() => setIsUploadModalOpen(true)}>Upload Item</Button>
+            <Button onClick={toggleTheme} variant="outline" size="icon">
+              {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+            </Button>
+          </div>
         </div>
-        <FilterPanel onFilter={handleFilter} />
+        <FilterPanel onFilter={handleFilter} allTags={Array.from(new Set(items.flatMap(item => item.tags)))} />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
