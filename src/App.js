@@ -6,7 +6,9 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DatasetCatalog from './DatasetCatalog';
 import DatasetDetail from './DatasetDetail';
 import CreateDataset from './CreateDataset';
+import CategoryPage from './CategoryPage';
 import HomePage from './Home';
+import SearchResults from './Searchdatabase';
 import { ThemeProviderComponent, useTheme } from './ThemeContext';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -58,7 +60,9 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<DatasetCatalog />} />
           <Route path="/dataset/:id" element={<DatasetDetail />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/create" element={<CreateDataset />} />
+          <Route path="/search" element={<SearchResults />} />
         </Routes>
       </Container>
     </>

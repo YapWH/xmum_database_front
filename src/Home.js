@@ -13,6 +13,10 @@ import {
   Box,
   useTheme,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { ThemeProvider } from '@mui/material/styles';
@@ -27,6 +31,8 @@ function HomePage() {
   const [categories, setCategories] = useState([]);
   const [datasets, setDatasets] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchField, setSearchField] = useState('title');
 
   useEffect(() => {
     const fetchCategoriesAndDatasets = async () => {
@@ -55,7 +61,7 @@ function HomePage() {
   }, []);
 
   const handleSearch = () => {
-    navigate('/search');
+    navigate(`/search?query=${searchQuery}&field=${searchField}`);
   };
 
   const handleCategoryClick = (category) => {
@@ -80,24 +86,50 @@ function HomePage() {
           <Typography variant="h5" sx={{ mb: 4, color: 'text.secondary' }}>
             Discover and explore our vast collection of datasets
           </Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Search datasets..."
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <Button variant="contained" color="primary" onClick={handleSearch}>
-                  Search
-                </Button>
-              ),
-            }}
-            sx={{ maxWidth: 600, margin: 'auto' }}
-          />
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search datasets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ maxWidth: 600, margin: 'auto' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Field</InputLabel>
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  label="Field"
+                >
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="author">Author</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleSearch}
+                sx={{ height: '56px' }}
+              >
+                Search
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
 
         <Box sx={{ mb: 6 }}>
