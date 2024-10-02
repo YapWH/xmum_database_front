@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     List, ListItem, ListItemText, Collapse, Typography, Box,
-    Paper, Divider, ListItemIcon, CircularProgress, ThemeProvider
+    Paper, Divider, ListItemIcon, CircularProgress, ThemeProvider, Drawer, IconButton
 } from '@mui/material';
-import { ExpandLess, ExpandMore, FolderOutlined, DescriptionOutlined } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, FolderOutlined, DescriptionOutlined, Menu as MenuIcon } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles'; // 引入 useTheme
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     width: 280,
@@ -34,11 +35,13 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
 }));
 
 function Sidebar() {
-    const theme = useTheme(); // 使用 useTheme 获取当前主题
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('1100'));
     const [categories, setCategories] = useState([]);
     const [openCategory, setOpenCategory] = useState('');
     const [titles, setTitles] = useState({});
     const [loading, setLoading] = useState(true);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -90,6 +93,10 @@ function Sidebar() {
         navigate(`/dataset/${title}`);
     };
 
+    const toggleDrawer = () => {
+        setDrawerOpen(!drawerOpen);
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -98,46 +105,71 @@ function Sidebar() {
         );
     }
 
+    const sidebarContent = (
+        <StyledPaper>
+            <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'primary.contrastText', fontWeight: 'bold' }}>
+                Categories
+            </Typography>
+            <Divider />
+            <List>
+                {categories.map((category) => (
+                    <React.Fragment key={category}>
+                        <StyledListItem button onClick={() => handleCategoryClick(category)}>
+                            <ListItemIcon>
+                                <FolderOutlined color="primary" />
+                            </ListItemIcon>
+                            <ListItemText primary={category} primaryTypographyProps={{ fontWeight: 'medium' }} />
+                            {openCategory === category ? <ExpandLess color="action" /> : <ExpandMore color="action" />}
+                        </StyledListItem>
+                        <Collapse in={openCategory === category} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                {titles[category] && titles[category].map((title) => (
+                                    <StyledListItem
+                                        button
+                                        sx={{ pl: 4 }}
+                                        key={title}
+                                        onClick={() => handleTitleClick(title)}
+                                        selected={title === id}
+                                    >
+                                        <ListItemIcon>
+                                            <DescriptionOutlined color="secondary" />
+                                        </ListItemIcon>
+                                        <ListItemText primary={title} />
+                                    </StyledListItem>
+                                ))}
+                            </List>
+                        </Collapse>
+                        <Divider variant="middle" />
+                    </React.Fragment>
+                ))}
+            </List>
+        </StyledPaper>
+    );
+
     return (
         <ThemeProvider theme={theme}>
-            <StyledPaper>
-                <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'primary.contrastText', fontWeight: 'bold' }}>
-                    Categories
-                </Typography>
-                <Divider />
-                <List>
-                    {categories.map((category) => (
-                        <React.Fragment key={category}>
-                            <StyledListItem button onClick={() => handleCategoryClick(category)}>
-                                <ListItemIcon>
-                                    <FolderOutlined color="primary" />
-                                </ListItemIcon>
-                                <ListItemText primary={category} primaryTypographyProps={{ fontWeight: 'medium' }} />
-                                {openCategory === category ? <ExpandLess color="action" /> : <ExpandMore color="action" />}
-                            </StyledListItem>
-                            <Collapse in={openCategory === category} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    {titles[category] && titles[category].map((title) => (
-                                        <StyledListItem
-                                            button
-                                            sx={{ pl: 4 }}
-                                            key={title}
-                                            onClick={() => handleTitleClick(title)}
-                                            selected={title === id}
-                                        >
-                                            <ListItemIcon>
-                                                <DescriptionOutlined color="secondary" />
-                                            </ListItemIcon>
-                                            <ListItemText primary={title} />
-                                        </StyledListItem>
-                                    ))}
-                                </List>
-                            </Collapse>
-                            <Divider variant="middle" />
-                        </React.Fragment>
-                    ))}
-                </List>
-            </StyledPaper>
+            {isMobile ? (
+                <>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={toggleDrawer}
+                        sx={{ ml: 2, mt: 2 }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Drawer
+                        anchor="left"
+                        open={drawerOpen}
+                        onClose={toggleDrawer}
+                    >
+                        {sidebarContent}
+                    </Drawer>
+                </>
+            ) : (
+                sidebarContent
+            )}
         </ThemeProvider>
     );
 }
