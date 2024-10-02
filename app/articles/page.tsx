@@ -38,7 +38,7 @@ const articles: Article[] = [
   // Add more article items here
 ]
 
-export default function ArticlesPage() {
+export default function ArticlesSearchPage() {
   const [filteredArticles, setFilteredArticles] = useState(articles)
 
   const handleFilter = (filters: any) => {
@@ -51,7 +51,7 @@ export default function ArticlesPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <h1 className="text-4xl font-bold mb-8">Articles</h1>
+        <h1 className="text-4xl font-bold mb-8">Search Articles</h1>
         <FilterPanel onFilter={handleFilter} />
         <ItemGrid items={filteredArticles} />
       </div>

@@ -36,7 +36,7 @@ const datasets: Dataset[] = [
   // Add more dataset items here
 ]
 
-export default function DatasetsPage() {
+export default function DatasetsSearchPage() {
   const [filteredDatasets, setFilteredDatasets] = useState(datasets)
 
   const handleFilter = (filters: any) => {
@@ -49,7 +49,7 @@ export default function DatasetsPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <h1 className="text-4xl font-bold mb-8">Datasets</h1>
+        <h1 className="text-4xl font-bold mb-8">Search Datasets</h1>
         <FilterPanel onFilter={handleFilter} />
         <ItemGrid items={filteredDatasets} />
       </div>

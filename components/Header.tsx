@@ -1,7 +1,9 @@
+'use client'
+
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { Sun, Moon } from 'lucide-react'
-import { useTheme } from 'next-themes'
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
@@ -14,17 +16,17 @@ export default function Header() {
       <nav className="flex items-center space-x-4">
         <ul className="flex space-x-4">
           <li>
-            <Link href="/datasets">
+            <Link href="/datasets/home">
               <Button variant="ghost">Datasets</Button>
             </Link>
           </li>
           <li>
-            <Link href="/notes">
+            <Link href="/notes/home">
               <Button variant="ghost">Notes</Button>
             </Link>
           </li>
           <li>
-            <Link href="/articles">
+            <Link href="/articles/home">
               <Button variant="ghost">Articles</Button>
             </Link>
           </li>

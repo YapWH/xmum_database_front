@@ -36,7 +36,7 @@ const notes: Notes[] = [
   // Add more notes items here
 ]
 
-export default function NotesPage() {
+export default function NotesSearchPage() {
   const [filteredNotes, setFilteredNotes] = useState(notes)
 
   const handleFilter = (filters: any) => {
@@ -49,7 +49,7 @@ export default function NotesPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <h1 className="text-4xl font-bold mb-8">Notes</h1>
+        <h1 className="text-4xl font-bold mb-8">Search Notes</h1>
         <FilterPanel onFilter={handleFilter} />
         <ItemGrid items={filteredNotes} />
       </div>
