@@ -39,7 +39,7 @@ function SearchResults() {
     if (initialSearchQuery) {
       performSearch(initialSearchQuery, initialSearchField);
     }
-  }, []);
+  });
 
   const performSearch = async (query, field) => {
     setLoading(true);
@@ -83,46 +83,64 @@ function SearchResults() {
         <Box sx={{ mb: 4 }}>
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={12} sm={8}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search datasets..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Field</InputLabel>
-                <Select
-                  value={searchField}
-                  onChange={(e) => setSearchField(e.target.value)}
-                  label="Field"
-                >
-                  <MenuItem value="title">Title</MenuItem>
-                  <MenuItem value="author">Author</MenuItem>
-                  <MenuItem value="description">Description</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={handleSearch}
-                sx={{ height: '56px' }}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
               >
-                Search
-              </Button>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search datasets..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </motion.div>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Field</InputLabel>
+                  <Select
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    label="Field"
+                  >
+                    <MenuItem value="title">Title</MenuItem>
+                    <MenuItem value="author">Author</MenuItem>
+                    <MenuItem value="description">Description</MenuItem>
+                  </Select>
+                </FormControl>
+              </motion.div>
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSearch}
+                  sx={{ height: '56px' }}
+                >
+                  Search
+                </Button>
+              </motion.div>
             </Grid>
           </Grid>
         </Box>
@@ -147,7 +165,13 @@ function SearchResults() {
               <Grid container spacing={3}>
                 {results.map((dataset, index) => (
                   <Grid item xs={12} sm={6} md={4} key={index}>
-                    <DatasetCard dataset={dataset} onClick={handleDatasetClick} />
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <DatasetCard dataset={dataset} onClick={handleDatasetClick} />
+                    </motion.div>
                   </Grid>
                 ))}
               </Grid>

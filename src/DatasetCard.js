@@ -1,8 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardActions, Button, Typography, Grid, Box } from '@mui/material';
+import { Card, CardContent, CardActions, Button, Typography, Grid, Box, useTheme } from '@mui/material';
 import { ThumbUp, ThumbDown, CalendarToday, GetApp } from '@mui/icons-material';
 
 const DatasetCard = ({ dataset, onClick }) => {
+    const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
+
     return (
         <Card sx={{
             height: '100%',
@@ -15,7 +18,7 @@ const DatasetCard = ({ dataset, onClick }) => {
                 transform: 'translateY(-8px)',
                 boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
             },
-            background: '#f0f0f0',
+            background: isDarkMode ? '#424242' : '#f0f0f0',
         }}>
             <Box sx={{ 
                 background: '#1875d1',
