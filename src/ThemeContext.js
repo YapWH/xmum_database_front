@@ -11,6 +11,11 @@ export const ThemeProviderComponent = ({ children }) => {
   const theme = useMemo(() => createTheme({
     palette: {
       mode,
+      ...(mode === 'light' && {
+        background: {
+          default: '#f5f5f5',
+        },
+      }),
     },
   }), [mode]);
 
