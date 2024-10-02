@@ -6,9 +6,6 @@ import {
   TextField,
   Button,
   Grid,
-  Card,
-  CardContent,
-  CardActions,
   InputAdornment,
   Box,
   useTheme,
@@ -19,67 +16,16 @@ import {
   MenuItem,
   Chip,
   Avatar,
-  Divider,
   Paper,
   CssBaseline,
 } from '@mui/material';
 import { Search as SearchIcon, Category as CategoryIcon } from '@mui/icons-material';
-import { ThemeProvider, alpha, createTheme } from '@mui/material/styles';
+import { ThemeProvider, alpha } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import DatasetCard from './DatasetCard'; // 导入 DatasetCard 组件
 
 axios.defaults.baseURL = 'http://0.0.0.0:8000';
-
-const theme = createTheme({
-  palette: {
-    mode: 'dark', // 支持深色模式
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    background: {
-      default: '#121212',
-      paper: '#1d1d1d',
-    },
-  },
-  typography: {
-    fontFamily: 'Roboto, sans-serif',
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '20px',
-          textTransform: 'none',
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-          },
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          padding: '20px',
-          borderRadius: '15px',
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '20px',
-          },
-        },
-      },
-    },
-  },
-});
 
 function HomePage() {
   const navigate = useNavigate();
@@ -117,11 +63,19 @@ function HomePage() {
   }, []);
 
   const handleSearch = () => {
+    if (!searchQuery) {
+      alert('Please enter a search query');
+      return;
+    }
     navigate(`/search?query=${searchQuery}&field=${searchField}`);
   };
 
   const handleCategoryClick = (category) => {
     navigate(`/category/${category}`);
+  };
+
+  const handleDatasetClick = (title) => {
+    navigate(`/dataset/${title}`);
   };
 
   if (loading) {
@@ -242,20 +196,7 @@ function HomePage() {
                     <Grid container spacing={3}>
                       {datasets.slice(0, 3).map((dataset, index) => (
                         <Grid item xs={12} sm={6} md={4} key={index}>
-                          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 3, '&:hover': { boxShadow: 6 } }}>
-                            <CardContent sx={{ flexGrow: 1 }}>
-                              <Typography gutterBottom variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
-                                {dataset.title}
-                              </Typography>
-                              <Divider sx={{ my: 1 }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {dataset.description}
-                              </Typography>
-                            </CardContent>
-                            <CardActions>
-                              <Button size="small" color="primary" variant="outlined">View Details</Button>
-                            </CardActions>
-                          </Card>
+                          <DatasetCard dataset={dataset} onClick={handleDatasetClick} />
                         </Grid>
                       ))}
                     </Grid>
