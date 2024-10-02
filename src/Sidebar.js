@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     List, ListItem, ListItemText, Collapse, Typography, Box,
-    Paper, Divider, ListItemIcon, CircularProgress, ThemeProvider, Drawer, IconButton
+    Paper, ListItemIcon, CircularProgress, ThemeProvider, Drawer, IconButton
 } from '@mui/material';
 import { ExpandLess, ExpandMore, FolderOutlined, DescriptionOutlined, Menu as MenuIcon } from '@mui/icons-material';
 import { styled } from '@mui/system';
@@ -14,25 +14,33 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     width: 280,
     height: '100%',
     overflowY: 'auto',
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    transition: theme.transitions.create(['box-shadow'], {
-        duration: theme.transitions.duration.short,
-    }),
-    '&:hover': {
-        boxShadow: theme.shadows[10],
-    },
+    overflowX: 'hidden',
+    backgroundColor: theme.palette.background.default,
+    boxShadow: 'none',
+    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRadius: 0,
 }));
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
+    borderRadius: theme.shape.borderRadius,
+    margin: '4px 8px',
     transition: theme.transitions.create(['background-color', 'padding-left'], {
         duration: theme.transitions.duration.shortest,
     }),
     '&:hover': {
         backgroundColor: theme.palette.action.hover,
-        paddingLeft: theme.spacing(3),
+    },
+    '&.Mui-selected': {
+        backgroundColor: theme.palette.primary.light,
+        '&:hover': {
+            backgroundColor: theme.palette.primary.light,
+        },
     },
 }));
+
+const StyledListItemIcon = styled(ListItemIcon)({
+    minWidth: 36,
+});
 
 function Sidebar() {
     const theme = useTheme();
@@ -110,15 +118,20 @@ function Sidebar() {
             <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'primary.contrastText', fontWeight: 'bold' }}>
                 Categories
             </Typography>
-            <Divider />
-            <List>
+            <List sx={{ pt: 1 }}>
                 {categories.map((category) => (
                     <React.Fragment key={category}>
                         <StyledListItem button onClick={() => handleCategoryClick(category)}>
-                            <ListItemIcon>
+                            <StyledListItemIcon>
                                 <FolderOutlined color="primary" />
-                            </ListItemIcon>
-                            <ListItemText primary={category} primaryTypographyProps={{ fontWeight: 'medium' }} />
+                            </StyledListItemIcon>
+                            <ListItemText 
+                                primary={category} 
+                                primaryTypographyProps={{ 
+                                    fontWeight: 'medium',
+                                    fontSize: '0.95rem',
+                                }} 
+                            />
                             {openCategory === category ? <ExpandLess color="action" /> : <ExpandMore color="action" />}
                         </StyledListItem>
                         <Collapse in={openCategory === category} timeout="auto" unmountOnExit>
@@ -131,15 +144,19 @@ function Sidebar() {
                                         onClick={() => handleTitleClick(title)}
                                         selected={title === id}
                                     >
-                                        <ListItemIcon>
+                                        <StyledListItemIcon>
                                             <DescriptionOutlined color="secondary" />
-                                        </ListItemIcon>
-                                        <ListItemText primary={title} />
+                                        </StyledListItemIcon>
+                                        <ListItemText 
+                                            primary={title} 
+                                            primaryTypographyProps={{ 
+                                                fontSize: '0.9rem',
+                                            }}
+                                        />
                                     </StyledListItem>
                                 ))}
                             </List>
                         </Collapse>
-                        <Divider variant="middle" />
                     </React.Fragment>
                 ))}
             </List>

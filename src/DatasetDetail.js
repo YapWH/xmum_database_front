@@ -21,7 +21,6 @@ import { styled } from '@mui/system';
 import Sidebar from './Sidebar';
 
 const themeColor = '#1976d2'; // Primary color (blue)
-axios.defaults.baseURL = "http://0.0.0.0:8000";
 
 const AnimatedPaper = styled(Paper)({
     transition: 'transform 0.3s',
@@ -30,11 +29,29 @@ const AnimatedPaper = styled(Paper)({
     },
 });
 
+const AnimatedButton = styled(Button)({
+    transition: 'transform 0.2s',
+    '&:active': {
+        transform: 'scale(0.95)',
+    },
+});
+
+const FadeInContainer = styled(Container)({
+    opacity: 0,
+    animation: 'fadeIn 1s forwards',
+    '@keyframes fadeIn': {
+        to: {
+            opacity: 1,
+        },
+    },
+});
+
 function DatasetDetail() {
     const { id } = useParams();
     const [dataset, setDataset] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchDataset = async () => {
@@ -42,8 +59,10 @@ function DatasetDetail() {
                 const response = await axios.get(`/V1/Detailed?title=${id}`);
                 setDataset(response.data);
                 setFormData(response.data); // Initialize form data
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching dataset:', error);
+                setLoading(false);
             }
         };
 
@@ -94,7 +113,7 @@ function DatasetDetail() {
             });
     };
 
-    if (!dataset) {
+    if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
                 <CircularProgress />
@@ -103,7 +122,7 @@ function DatasetDetail() {
     }
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <FadeInContainer maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={3}>
                     <Sidebar />
@@ -162,9 +181,9 @@ function DatasetDetail() {
                                         }
                                         label="Reviewed"
                                     />
-                                    <Button variant="contained" color="primary" onClick={handleSave}>
+                                    <AnimatedButton variant="contained" color="primary" onClick={handleSave}>
                                         Save
-                                    </Button>
+                                    </AnimatedButton>
                                 </Stack>
                             </form>
                         ) : (
@@ -245,7 +264,7 @@ function DatasetDetail() {
                             </>
                         )}
                         <Box sx={{ mt: 4 }}>
-                            <Button
+                            <AnimatedButton
                                 variant="contained"
                                 color="primary"
                                 startIcon={<Download />}
@@ -254,8 +273,8 @@ function DatasetDetail() {
                                 sx={{ mb: 2 }}
                             >
                                 Download Dataset
-                            </Button>
-                            <Button
+                            </AnimatedButton>
+                            <AnimatedButton
                                 variant="outlined"
                                 color="primary"
                                 startIcon={<Edit />}
@@ -263,12 +282,12 @@ function DatasetDetail() {
                                 fullWidth
                             >
                                 {isEditing ? 'Cancel' : 'Edit'}
-                            </Button>
+                            </AnimatedButton>
                         </Box>
                     </Paper>
                 </Grid>
             </Grid>
-        </Container>
+        </FadeInContainer>
     );
 }
 
