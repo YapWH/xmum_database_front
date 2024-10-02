@@ -21,6 +21,7 @@ import {
   Avatar,
   Divider,
   Paper,
+  CssBaseline,
 } from '@mui/material';
 import { Search as SearchIcon, Category as CategoryIcon } from '@mui/icons-material';
 import { ThemeProvider, alpha, createTheme } from '@mui/material/styles';
@@ -31,6 +32,7 @@ axios.defaults.baseURL = 'http://0.0.0.0:8000';
 
 const theme = createTheme({
   palette: {
+    mode: 'dark', // 支持深色模式
     primary: {
       main: '#1976d2',
     },
@@ -38,8 +40,8 @@ const theme = createTheme({
       main: '#dc004e',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#121212',
+      paper: '#1d1d1d',
     },
   },
   typography: {
@@ -86,6 +88,7 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchField, setSearchField] = useState('title');
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchCategoriesAndDatasets = async () => {
@@ -131,6 +134,7 @@ function HomePage() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box sx={{ minHeight: '100vh', pt: 8, pb: 8, backgroundColor: theme.palette.background.default }}>
         <Container maxWidth="lg">
           <motion.div
@@ -207,8 +211,8 @@ function HomePage() {
                       label={category}
                       onClick={() => handleCategoryClick(category)}
                       color="secondary"
-                      sx={{ 
-                        borderRadius: '20px', 
+                      sx={{
+                        borderRadius: '20px',
                         fontWeight: 'bold',
                         '&:hover': {
                           backgroundColor: alpha(theme.palette.secondary.main, 0.8),
