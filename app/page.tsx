@@ -1,52 +1,105 @@
-import CardForm from "@/components/card-form";
-import Image from "next/image";
+'use client'
 
-const placeholder_data = [
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Sun, Moon } from 'lucide-react'
+import Header from '@/components/Header'
+import ItemGrid from '@/components/ItemGrid'
+import FilterPanel from '@/components/FilterPanel'
+import UploadModal from '@/components/UploadModal'
+import { Button } from '@/components/ui/button'
+
+type Category = 'Dataset' | 'Notes' | 'Articles'
+type Subcategory = 'CV' | 'NLP' | 'School' | 'Program'
+
+interface Item {
+  id: string
+  title: string
+  description: string
+  category: Category
+  subcategory: Subcategory
+  uploader: string
+  dateAdded: string
+  downloads: number
+  tags: string[]
+}
+
+const initialItems: Item[] = [
   {
-    title: "Sample Title 1",
-    description: "Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1 Sample Description 1",
-    downloads: 100,
-    downloadLink: "https://example.com/download1",
-    likes: 50
+    id: '1',
+    title: 'MNIST Dataset',
+    description: 'Handwritten digit dataset for machine learning',
+    category: 'Dataset',
+    subcategory: 'CV',
+    uploader: 'John Doe',
+    dateAdded: '2023-05-01',
+    downloads: 1000,
+    tags: ['machine learning', 'computer vision']
   },
   {
-    title: "Sample Title 2",
-    description: "Sample Description 2",
-    downloads: 200,
-    downloadLink: "https://example.com/download2",
-    likes: 75
+    id: '2',
+    title: 'Introduction to NLP',
+    description: 'Comprehensive notes on Natural Language Processing',
+    category: 'Notes',
+    subcategory: 'NLP',
+    uploader: 'Jane Smith',
+    dateAdded: '2023-05-15',
+    downloads: 500,
+    tags: ['nlp', 'machine learning']
   },
-  {
-    title: "Sample Title 3",
-    description: "Sample Description 3",
-    downloads: 150,
-    downloadLink: "https://example.com/download3",
-    likes: 60
-  }
-];
+  // Add more items as needed
+]
 
 export default function Home() {
+  const [items, setItems] = useState<Item[]>(initialItems)
+  const [filteredItems, setFilteredItems] = useState<Item[]>(initialItems)
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode)
+    document.documentElement.classList.toggle('dark')
+  }
+
+  const handleFilter = (filters: Partial<Item>) => {
+    const filtered = items.filter(item => {
+      return Object.entries(filters).every(([key, value]) => {
+        if (value === '') return true
+        if (key === 'tags') return (item[key] as string[]).includes(value as string)
+        return item[key as keyof Item] === value
+      })
+    })
+    setFilteredItems(filtered)
+  }
+
+  const handleUpload = (newItem: Item) => {
+    setItems([...items, newItem])
+    setFilteredItems([...filteredItems, newItem])
+    setIsUploadModalOpen(false)
+  }
+
   return (
-      <div>
-        <h1 className="text-3xl font-bold">
-          XMUM Database Directory
-        </h1>
-        <div className="flex flex-col items-center justify-center min-h-screen py-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {placeholder_data.map((data, index) => (
-              <CardForm
-                key={index}
-                param={{
-                  Title: data.title,
-                  Description: data.description,
-                  Downloads: data.downloads,
-                  DownloadLink: data.downloadLink,
-                  Likes: data.likes
-                }}
-              />
-            ))}
-          </div>
+    <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+      <div className="container mx-auto px-4 py-8">
+        <Header />
+        <div className="flex justify-between items-center mb-8">
+          <Button onClick={() => setIsUploadModalOpen(true)}>Upload Item</Button>
+          <Button onClick={toggleTheme} variant="outline" size="icon">
+            {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+          </Button>
         </div>
+        <FilterPanel onFilter={handleFilter} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ItemGrid items={filteredItems} />
+        </motion.div>
       </div>
-    );
+      {isUploadModalOpen && (
+        <UploadModal onClose={() => setIsUploadModalOpen(false)} onUpload={handleUpload} />
+      )}
+    </div>
+  )
 }
