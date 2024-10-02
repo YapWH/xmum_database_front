@@ -39,7 +39,7 @@ function SearchResults() {
     if (initialSearchQuery) {
       performSearch(initialSearchQuery, initialSearchField);
     }
-  });
+  }, [initialSearchQuery, initialSearchField]);
 
   const performSearch = async (query, field) => {
     setLoading(true);

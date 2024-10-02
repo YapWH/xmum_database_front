@@ -15,7 +15,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : theme.palette.background.default,
     boxShadow: 'none',
     borderRight: `1px solid ${theme.palette.divider}`,
     borderRadius: 0,

@@ -70,6 +70,12 @@ function HomePage() {
     navigate(`/search?query=${searchQuery}&field=${searchField}`);
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const handleCategoryClick = (category) => {
     navigate(`/category/${category}`);
   };
@@ -111,6 +117,7 @@ function HomePage() {
                     placeholder="Search datasets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleKeyPress}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
