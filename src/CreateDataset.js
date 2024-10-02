@@ -10,6 +10,8 @@ const CreateDataset = () => {
   const [description, setDescription] = useState('');
   const [author, setAuthor] = useState('');
   const [tags, setTags] = useState('');
+  const [category, setCategory] = useState('');
+  const [source, setSource] = useState('');
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -20,7 +22,7 @@ const CreateDataset = () => {
     setError('');
     setSuccess('');
 
-    if (!title || !description || !author || !tags || !file) {
+    if (!title || !description || !author || !tags || !category || !source || !file) {
       setError('Please provide all required fields.');
       return;
     }
@@ -31,6 +33,8 @@ const CreateDataset = () => {
     formData.append('example', description); // example is synchronized with description
     formData.append('author', author);
     formData.append('tags', tags);
+    formData.append('category', category);
+    formData.append('source', source);
     formData.append('file', file);
 
     try {
@@ -79,6 +83,20 @@ const CreateDataset = () => {
           margin="normal"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
+        />
+        <TextField
+          label="Category"
+          fullWidth
+          margin="normal"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+        <TextField
+          label="Source"
+          fullWidth
+          margin="normal"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
         />
         <Box display="flex" alignItems="center" margin="normal">
           <Input
