@@ -20,6 +20,7 @@ import { Download, Edit, Person, Description, Label, CheckCircle, CloudDownload,
 import { styled } from '@mui/system';
 
 const themeColor = '#1976d2'; // Primary color (blue)
+axios.defaults.baseURL = "http://0.0.0.0:8000";
 
 const AnimatedPaper = styled(Paper)({
     transition: 'transform 0.3s',
@@ -80,7 +81,7 @@ function DatasetDetail() {
     };
 
     const downloadDataset = () => {
-        axios.get(`http://0.0.0.0:8000/V1/Download?title=${dataset.title}`)
+        axios.get(`/V1/Download?title=${dataset.title}`)
             .then(response => {
                 const downloadLinks = response.data;
                 downloadLinks.forEach(link => {
