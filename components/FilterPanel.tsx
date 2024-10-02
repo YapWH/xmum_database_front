@@ -1,97 +1,133 @@
 import { useState, useEffect } from 'react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface FilterPanelProps {
-  onFilter: (filters: any) => void
-  allTags: string[]
+  onFilter: (filters: FilterState) => void
 }
 
-export default function FilterPanel({ onFilter, allTags }: FilterPanelProps) {
-  const [category, setCategory] = useState('All')
-  const [subcategory, setSubcategory] = useState('All')
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [dateRange, setDateRange] = useState('All')
-  const [searchQuery, setSearchQuery] = useState('')
+interface FilterState {
+  search: string
+  category: string
+  dateRange: string
+  tags: string[]
+}
+
+const categories = ['All', 'Dataset', 'Notes', 'Articles']
+const dateRanges = ['All Time', 'Last 24 Hours', 'Last 7 Days', 'Last 30 Days']
+const allTags = ['machine learning', 'computer vision', 'nlp', 'deep learning', 'ai', 'data science']
+
+export default function FilterPanel({ onFilter }: FilterPanelProps) {
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    category: 'All',
+    dateRange: 'All Time',
+    tags: [],
+  })
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    handleFilter()
-  }, [category, subcategory, selectedTags, dateRange, searchQuery])
+    onFilter(filters)
+  }, [filters, onFilter])
 
-  const handleFilter = () => {
-    onFilter({ category, subcategory, tags: selectedTags, dateRange, searchQuery })
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters(prev => ({ ...prev, search: e.target.value }))
   }
 
-  const handleTagChange = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-    )
+  const handleCategoryChange = (value: string) => {
+    setFilters(prev => ({ ...prev, category: value }))
+  }
+
+  const handleDateRangeChange = (value: string) => {
+    setFilters(prev => ({ ...prev, dateRange: value }))
+  }
+
+  const handleTagChange = (tag: string, checked: boolean) => {
+    setFilters(prev => ({
+      ...prev,
+      tags: checked
+        ? [...prev.tags, tag]
+        : prev.tags.filter(t => t !== tag)
+    }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      category: 'All',
+      dateRange: 'All Time',
+      tags: [],
+    })
   }
 
   return (
-    <div className="flex flex-col gap-4 mb-8">
-      <div className="flex flex-wrap gap-4">
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Categories</SelectItem>
-            <SelectItem value="Dataset">Dataset</SelectItem>
-            <SelectItem value="Notes">Notes</SelectItem>
-            <SelectItem value="Articles">Articles</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={subcategory} onValueChange={setSubcategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Subcategory" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Subcategories</SelectItem>
-            <SelectItem value="CV">CV</SelectItem>
-            <SelectItem value="NLP">NLP</SelectItem>
-            <SelectItem value="School">School</SelectItem>
-            <SelectItem value="Program">Program</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={dateRange} onValueChange={setDateRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Date Range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Time</SelectItem>
-            <SelectItem value="Last 24 hours">Last 24 hours</SelectItem>
-            <SelectItem value="Last 7 days">Last 7 days</SelectItem>
-            <SelectItem value="Last 30 days">Last 30 days</SelectItem>
-          </SelectContent>
-        </Select>
-        <Input
-          type="text"
-          placeholder="Search items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-[180px]"
-        />
-      </div>
-      <div className="flex flex-wrap gap-4">
-        {allTags.map(tag => (
-          <div key={tag} className="flex items-center space-x-2">
-            <Checkbox
-              id={tag}
-              checked={selectedTags.includes(tag)}
-              onCheckedChange={() => handleTagChange(tag)}
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      <CollapsibleTrigger asChild>
+        <Button variant="outline" className="flex justify-between w-full mb-4">
+          <span>Filters</span>
+          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="space-y-4">
+        <div className="space-y-4 p-4 bg-background border rounded-lg shadow-sm">
+          <div>
+            <Label htmlFor="search">Search</Label>
+            <Input
+              id="search"
+              placeholder="Search items..."
+              value={filters.search}
+              onChange={handleSearchChange}
             />
-            <label
-              htmlFor={tag}
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {tag}
-            </label>
           </div>
-        ))}
-      </div>
-    </div>
+          <div>
+            <Label htmlFor="category">Category</Label>
+            <Select value={filters.category} onValueChange={handleCategoryChange}>
+              <SelectTrigger id="category">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="dateRange">Date Range</Label>
+            <Select value={filters.dateRange} onValueChange={handleDateRangeChange}>
+              <SelectTrigger id="dateRange">
+                <SelectValue placeholder="Select date range" />
+              </SelectTrigger>
+              <SelectContent>
+                {dateRanges.map(range => (
+                  <SelectItem key={range} value={range}>{range}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Tags</Label>
+            <div className="flex flex-wrap gap-4">
+              {allTags.map(tag => (
+                <div key={tag} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={tag}
+                    checked={filters.tags.includes(tag)}
+                    onCheckedChange={(checked) => handleTagChange(tag, checked as boolean)}
+                  />
+                  <Label htmlFor={tag}>{tag}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Button onClick={clearFilters} variant="outline">Clear Filters</Button>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }

@@ -1,149 +1,152 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Sun, Moon } from 'lucide-react'
 import Header from '@/components/Header'
 import ItemGrid from '@/components/ItemGrid'
-import FilterPanel from '@/components/FilterPanel'
-import UploadModal from '@/components/UploadModal'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { Item } from '@/types'
 
-type Category = 'Dataset' | 'Notes' | 'Articles'
-type Subcategory = 'CV' | 'NLP' | 'School' | 'Program'
-
-interface Item {
-  id: string
-  title: string
-  description: string
-  category: Category
-  subcategory: Subcategory
-  uploader: string
-  dateAdded: string
-  downloads: number
-  tags: string[]
-}
-
-const initialItems: Item[] = [
+const trendingCategories = [
   {
-    id: '1',
-    title: 'MNIST Dataset',
-    description: 'Handwritten digit dataset for machine learning',
-    category: 'Dataset',
-    subcategory: 'CV',
-    uploader: 'John Doe',
-    dateAdded: '2023-05-01',
-    downloads: 1000,
-    tags: ['machine learning', 'computer vision']
+    name: 'Machine Learning',
+    items: [
+      {
+        id: '1',
+        title: 'Introduction to Machine Learning',
+        description: 'A comprehensive guide to ML basics',
+        category: 'Notes',
+        subcategory: 'ML',
+        uploader: 'John Doe',
+        dateAdded: '2023-06-01',
+        downloads: 1000,
+        tags: ['machine learning', 'ai'],
+        school: 'Stanford',
+        program: 'Computer Science'
+      },
+      {
+        id: '2',
+        title: 'MNIST Dataset',
+        description: 'Handwritten digit dataset for machine learning',
+        category: 'Dataset',
+        subcategory: 'CV',
+        uploader: 'Jane Smith',
+        dateAdded: '2023-05-15',
+        downloads: 5000,
+        tags: ['machine learning', 'computer vision'],
+        datasetSize: '11.5 MB',
+        fileFormat: 'CSV'
+      },
+    ]
   },
   {
-    id: '2',
-    title: 'Introduction to NLP',
-    description: 'Comprehensive notes on Natural Language Processing',
-    category: 'Notes',
-    subcategory: 'NLP',
-    uploader: 'Jane Smith',
-    dateAdded: '2023-05-15',
-    downloads: 500,
-    tags: ['nlp', 'machine learning']
+    name: 'Computer Vision',
+    items: [
+      {
+        id: '3',
+        title: 'Advanced Computer Vision Techniques',
+        description: 'Exploring state-of-the-art CV algorithms',
+        category: 'Articles',
+        subcategory: 'CV',
+        uploader: 'Alice Johnson',
+        dateAdded: '2023-05-30',
+        downloads: 750,
+        tags: ['computer vision', 'deep learning'],
+        school: 'MIT',
+        program: 'Artificial Intelligence',
+        publicationDate: '2023-05-25'
+      },
+      {
+        id: '4',
+        title: 'ImageNet',
+        description: 'Large-scale image recognition dataset',
+        category: 'Dataset',
+        subcategory: 'CV',
+        uploader: 'Bob Williams',
+        dateAdded: '2023-05-10',
+        downloads: 10000,
+        tags: ['computer vision', 'deep learning'],
+        datasetSize: '150 GB',
+        fileFormat: 'JPEG'
+      },
+    ]
   },
   {
-    id: '3',
-    title: 'Deep Learning Advances',
-    description: 'Recent advancements in deep learning techniques',
-    category: 'Articles',
-    subcategory: 'CV',
-    uploader: 'Alice Johnson',
-    dateAdded: '2023-06-01',
-    downloads: 750,
-    tags: ['deep learning', 'ai']
+    name: 'Natural Language Processing',
+    items: [
+      {
+        id: '5',
+        title: 'NLP Fundamentals',
+        description: 'Essential concepts in Natural Language Processing',
+        category: 'Notes',
+        subcategory: 'NLP',
+        uploader: 'Charlie Brown',
+        dateAdded: '2023-06-05',
+        downloads: 800,
+        tags: ['nlp', 'machine learning'],
+        school: 'Berkeley',
+        program: 'Data Science'
+      },
+      {
+        id: '6',
+        title: 'Transformer Architecture Explained',
+        description: 'Deep dive into the Transformer model',
+        category: 'Articles',
+        subcategory: 'NLP',
+        uploader: 'Diana Prince',
+        dateAdded: '2023-06-02',
+        downloads: 1200,
+        tags: ['nlp', 'deep learning', 'transformers'],
+        school: 'Oxford',
+        program: 'Computational Linguistics',
+        publicationDate: '2023-06-01'
+      },
+    ]
   }
 ]
 
 export default function Home() {
-  const [items, setItems] = useState<Item[]>(initialItems)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
-  const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All')
-  const [filters, setFilters] = useState({
-    category: 'All',
-    subcategory: 'All',
-    tags: [] as string[],
-    dateRange: 'All',
-    searchQuery: ''
-  })
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle('dark')
-  }
-
-  const handleFilter = (newFilters: typeof filters) => {
-    setFilters(newFilters)
-  }
-
-  const handleUpload = (newItem: Item) => {
-    setItems([...items, newItem])
-    setIsUploadModalOpen(false)
-  }
-
-  const handleCategoryChange = (category: Category | 'All') => {
-    setActiveCategory(category)
-    setFilters({ ...filters, category })
-  }
-
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      const categoryMatch = filters.category === 'All' || item.category === filters.category
-      const subcategoryMatch = filters.subcategory === 'All' || item.subcategory === filters.subcategory
-      const tagsMatch = filters.tags.length === 0 || filters.tags.some(tag => item.tags.includes(tag))
-      const searchMatch = item.title.toLowerCase().includes(filters.searchQuery.toLowerCase())
-      
-      let dateMatch = true
-      if (filters.dateRange !== 'All') {
-        const itemDate = new Date(item.dateAdded)
-        const now = new Date()
-        switch (filters.dateRange) {
-          case 'Last 24 hours':
-            dateMatch = now.getTime() - itemDate.getTime() <= 24 * 60 * 60 * 1000
-            break
-          case 'Last 7 days':
-            dateMatch = now.getTime() - itemDate.getTime() <= 7 * 24 * 60 * 60 * 1000
-            break
-          case 'Last 30 days':
-            dateMatch = now.getTime() - itemDate.getTime() <= 30 * 24 * 60 * 60 * 1000
-            break
-        }
-      }
-
-      return categoryMatch && subcategoryMatch && tagsMatch && dateMatch && searchMatch
-    })
-  }, [items, filters])
-
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <Header activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
-          <div className="flex items-center space-x-4">
-            <Button onClick={() => setIsUploadModalOpen(true)}>Upload Item</Button>
-            <Button onClick={toggleTheme} variant="outline" size="icon">
-              {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
-            </Button>
-          </div>
-        </div>
-        <FilterPanel onFilter={handleFilter} allTags={Array.from(new Set(items.flatMap(item => item.tags)))} />
+        <Header />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <ItemGrid items={filteredItems} />
+          <h1 className="text-4xl font-bold mb-8">Welcome to XMUM Database Directory</h1>
+
+          {trendingCategories.map((category, index) => (
+            <section key={category.name} className="mb-12">
+              <h2 className="text-3xl font-bold mb-6">Trending in {category.name}</h2>
+              <ItemGrid items={category.items} />
+              <div className="mt-4">
+                <Link href={`/category/${category.name}`}>
+                  <Button variant="outline">View all {category.name} items</Button>
+                </Link>
+              </div>
+            </section>
+          ))}
+
+          <section>
+            <h2 className="text-3xl font-bold mb-6">Explore More</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Link href="/datasets">
+                <Button className="w-full text-lg py-6">Datasets</Button>
+              </Link>
+              <Link href="/notes">
+                <Button className="w-full text-lg py-6">Notes</Button>
+              </Link>
+              <Link href="/articles">
+                <Button className="w-full text-lg py-6">Articles</Button>
+              </Link>
+            </div>
+          </section>
         </motion.div>
       </div>
-      {isUploadModalOpen && (
-        <UploadModal onClose={() => setIsUploadModalOpen(false)} onUpload={handleUpload} />
-      )}
     </div>
   )
 }

@@ -1,22 +1,45 @@
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Sun, Moon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 
-interface HeaderProps {
-  activeCategory: 'All' | 'Dataset' | 'Notes' | 'Articles'
-  onCategoryChange: (category: string) => void
-}
+export default function Header() {
+  const { theme, setTheme } = useTheme()
 
-export default function Header({ activeCategory, onCategoryChange }: HeaderProps) {
   return (
-    <header className="flex items-center space-x-8">
-      <h1 className="text-4xl font-bold">XMUM Database Directory</h1>
-      <Tabs value={activeCategory} onValueChange={onCategoryChange}>
-        <TabsList>
-          <TabsTrigger value="All">All</TabsTrigger>
-          <TabsTrigger value="Dataset">Datasets</TabsTrigger>
-          <TabsTrigger value="Notes">Notes</TabsTrigger>
-          <TabsTrigger value="Articles">Articles</TabsTrigger>
-        </TabsList>
-      </Tabs>
+    <header className="flex items-center justify-between mb-8">
+      <Link href="/" className="text-4xl font-bold text-primary">
+        XMUM Database Directory
+      </Link>
+      <nav className="flex items-center space-x-4">
+        <ul className="flex space-x-4">
+          <li>
+            <Link href="/datasets">
+              <Button variant="ghost">Datasets</Button>
+            </Link>
+          </li>
+          <li>
+            <Link href="/notes">
+              <Button variant="ghost">Notes</Button>
+            </Link>
+          </li>
+          <li>
+            <Link href="/articles">
+              <Button variant="ghost">Articles</Button>
+            </Link>
+          </li>
+        </ul>
+        <Link href="/upload">
+          <Button>Upload</Button>
+        </Link>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        >
+          {theme === 'dark' ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+        </Button>
+      </nav>
     </header>
   )
 }
