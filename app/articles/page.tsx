@@ -1,59 +1,54 @@
-'use client'
-
-import { useState } from 'react'
+import Link from 'next/link'
 import Header from '@/components/Header'
-import ItemGrid from '@/components/ItemGrid'
-import FilterPanel from '@/components/FilterPanel'
-import { Article } from '@/types'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-const articles: Article[] = [
-  {
-    id: '1',
-    title: 'Deep Learning Advances',
-    description: 'Recent advancements in deep learning techniques',
-    category: 'Articles',
-    subcategory: 'CV',
-    uploader: 'Alice Johnson',
-    dateAdded: '2023-06-01',
-    downloads: 750,
-    tags: ['deep learning', 'ai'],
-    school: 'MIT',
-    program: 'Artificial Intelligence',
-    publicationDate: '2023-05-30'
-  },
-  {
-    id: '2',
-    title: 'The Future of Natural Language Processing',
-    description: 'Exploring upcoming trends in NLP',
-    category: 'Articles',
-    subcategory: 'NLP',
-    uploader: 'Bob Williams',
-    dateAdded: '2023-06-05',
-    downloads: 600,
-    tags: ['nlp', 'future trends'],
-    school: 'Stanford University',
-    program: 'Computer Science',
-    publicationDate: '2023-06-01'
-  },
-  // Add more article items here
-]
-
-export default function ArticlesSearchPage() {
-  const [filteredArticles, setFilteredArticles] = useState(articles)
-
-  const handleFilter = (filters: any) => {
-    // Implement filtering logic here
-    // For now, we'll just return all articles
-    setFilteredArticles(articles)
-  }
-
+export default function ArticlesHomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <h1 className="text-4xl font-bold mb-8">Search Articles</h1>
-        <FilterPanel onFilter={handleFilter} />
-        <ItemGrid items={filteredArticles} />
+        <h1 className="text-4xl font-bold mb-8">Articles Home</h1>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Featured Articles</CardTitle>
+              <CardDescription>Read our top-picked articles</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/articles/featured">
+                <Button className="w-full">View Featured Articles</Button>
+              </Link>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Publications</CardTitle>
+              <CardDescription>Check out the latest article publications</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/articles/recent">
+                <Button className="w-full">View Recent Publications</Button>
+              </Link>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Topics</CardTitle>
+              <CardDescription>Browse articles by topic</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/articles/topics">
+                <Button className="w-full">Explore Topics</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="mt-8">
+          <Link href="/articles/search">
+            <Button size="lg">Search All Articles</Button>
+          </Link>
+        </div>
       </div>
     </div>
   )

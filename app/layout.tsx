@@ -1,11 +1,12 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
+import '@fontsource/geist-sans'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 import { ThemeProvider } from "@/components/theme-provider"
-
-const inter = Inter({ subsets: ['latin'] })
+import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'XMUM Database Directory',
+  title: 'XMUM Database',
   description: 'A comprehensive database of datasets, notes, and articles',
 }
 
@@ -16,9 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={'font-geist'}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
