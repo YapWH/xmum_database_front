@@ -8,9 +8,9 @@ import { Upload, Search } from 'lucide-react'
 import PlaceHolderDatasets from '@/placeholder'
 
 const datasetsByTag: Record<string, Dataset[]> = {
-  'machine-learning': PlaceHolderDatasets,
-  'computer-vision': PlaceHolderDatasets,
-  'natural-language-processing': PlaceHolderDatasets,
+  'machine-learning': PlaceHolderDatasets.filter((d) => d.tags.includes('machine learning')),
+  'computer-vision': PlaceHolderDatasets.filter((d) => d.tags.includes('computer vision')),
+  'natural-language-processing': PlaceHolderDatasets.filter((d) => d.tags.includes('natural language processing')),
 }
 
 function getRandomItems(items: Dataset[], count: number): Dataset[] {
@@ -43,6 +43,7 @@ export default function DatasetsHomePage() {
             </Link>
           </div>
         </div>
+        
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb12">
           <Card>
             <CardHeader>
@@ -80,8 +81,17 @@ export default function DatasetsHomePage() {
         </div>
         <br/>
 
+        {/* Trending Dataset*/}
         <h2 className="text-3xl font-bold mb-6">Trending Datasets</h2>
         <ItemGrid items={PlaceHolderDatasets.slice(0, 6)} />
+        
+        {/* Random Datasets*/}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-6">You Might Be Interested In</h2>
+          <ItemGrid items={randomDatasets} />
+        </div>
+
+        {/* Datasets by Tag */}
         {Object.entries(datasetsByTag).map(([tag, items]) => (
           <div key={tag} className="mt-12">
             <h2 className="text-3xl font-bold mb-6">Top {tag.replace('-', ' ')} Datasets</h2>
@@ -89,10 +99,7 @@ export default function DatasetsHomePage() {
           </div>
         ))}
 
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-6">You Might Be Interested In</h2>
-          <ItemGrid items={randomDatasets} />
-        </div>
+        
       </div>
     </div>
   )

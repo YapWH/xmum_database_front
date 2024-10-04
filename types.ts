@@ -12,6 +12,7 @@ export interface Item {
   likes: number
   dislikes: number
   source: string
+  auditStatus: string
 }
 
 export interface Dataset extends Item {

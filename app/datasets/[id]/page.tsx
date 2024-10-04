@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Dataset } from '@/types'
 import { Download, ArrowLeft } from 'lucide-react'
+import ReportForm from '@/components/ReportForm'
 
 // TODO: Fetch item details from the API
 const fetchItemDetails = async (category: string, id: string): Promise<Dataset> => {
@@ -84,9 +85,12 @@ export default function ItemDetailPage() {
               <CardTitle className="text-3xl font-bold mb-6">{item.title}</CardTitle>
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
             </div>
-            <Button onClick={handleDownload}>
-              <Download className="mr-2 h-4 w-4" /> Download
-            </Button>
+            <div className="flex space-x-2">
+              <Button onClick={handleDownload}>
+                <Download className="mr-2 h-4 w-4" /> Download
+              </Button>
+              <ReportForm itemId={item.id} itemTitle={item.title} />
+            </div>
           </CardHeader>
           <CardContent>
             <p className="mb-4" style={{ color: '#808080' }}>{item.description}</p>

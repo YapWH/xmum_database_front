@@ -6,11 +6,11 @@ import { Database, BookOpen, FileText } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen text-foreground flex flex-col">
       <div className="container mx-auto px-4 py-8 flex-grow flex flex-col">
         <Header />
         <div className="flex-grow flex flex-col items-center justify-center">
-          <h1 className="text-4xl font-bold mb-8 text-center">Welcome to XMUM Database Directory</h1>
+          <h1 className="text-4xl font-bold mb-8 text-center">Welcome to XMUM Database</h1>
           <div className="grid gap-8 md:grid-cols-3 max-w-4xl w-full">
             <Card className="flex flex-col items-center text-center">
               <CardHeader>

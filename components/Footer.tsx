@@ -18,6 +18,9 @@ export default function Footer() {
             <Link href="/terms" className="text-primary hover:underline">
               Terms of Service
             </Link>
+            <Link href="/feedback" className="text-primary hover:underline">
+              Feedback
+            </Link>
           </nav>
         </div>
       </div>
