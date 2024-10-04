@@ -2,9 +2,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import ModeToggle from '@/components/ModeToggle'
 import Logo from './Logo'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
-export default function Header() {
+export default function HeaderAdmin( 
+  {link, name}: {link: string, name: string}
+ ) {
   return (
     <header className="flex justify-between items-center py-6">
       <Logo />
@@ -19,11 +20,8 @@ export default function Header() {
           <Button variant="ghost">Articles</Button>
         </Link>
         <ModeToggle />
-        <Link href="/profile">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src='https://github.com/shadcn.png' alt="NiHao" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
+        <Link href={link}>
+          <Button>{name}</Button>
         </Link>
       </nav>
     </header>

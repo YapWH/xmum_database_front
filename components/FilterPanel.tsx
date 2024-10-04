@@ -73,6 +73,7 @@ export default function FilterPanel({ onFilter }: FilterPanelProps) {
           {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </CollapsibleTrigger>
+
       <CollapsibleContent className="space-y-4">
         <div className="space-y-4 p-4 bg-background border rounded-lg shadow-sm">
           <div>

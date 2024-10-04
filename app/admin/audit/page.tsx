@@ -10,8 +10,15 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { toast } from '@/hooks/use-toast'
-import { Item } from '@/types'
 import PlaceHolderDatasets from '@/placeholder'
+
+interface Item {
+  id: string
+  title: string
+  description: string
+  category: string
+  auditStatus: string
+}
 
 const auditStatusOptions = [
   { value: 'pending', label: 'Pending' },
@@ -20,21 +27,23 @@ const auditStatusOptions = [
 ]
 
 const categoryOptions = [
-  { value: 'datasets', label: 'Datasets' },
-  { value: 'notes', label: 'Notes' },
-  { value: 'articles', label: 'Articles' },
+  { value: 'Datasets', label: 'Datasets' },
+  { value: 'Notes', label: 'Notes' },
+  { value: 'Articles', label: 'Articles' },
 ]
 
 export default function AdminAuditPage() {
   const [items, setItems] = useState<Item[]>([])
+  const [filteredItems, setFilteredItems] = useState<Item[]>([])
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [editedItem, setEditedItem] = useState<Item | null>(null)
+  const [filterValue, setFilterValue] = useState('')
 
   useEffect(() => {
     // Fetch items from API
     const fetchItems = async () => {
-      // Replace this with actual API call to fetch items
       setItems(PlaceHolderDatasets)
+      setFilteredItems(PlaceHolderDatasets)
     }
     fetchItems()
   }, [])
@@ -52,6 +61,7 @@ export default function AdminAuditPage() {
       item.id === editedItem.id ? editedItem : item
     )
     setItems(updatedItems)
+    setFilteredItems(updatedItems)
     setSelectedItem(null)
     setEditedItem(null)
     toast({ title: "Item updated successfully" })
@@ -61,7 +71,20 @@ export default function AdminAuditPage() {
     // Replace this with actual API call to delete item
     const updatedItems = items.filter(item => item.id !== id)
     setItems(updatedItems)
+    setFilteredItems(updatedItems)
     toast({ title: "Item deleted successfully" })
+  }
+
+  const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setFilterValue(value)
+    const filtered = items.filter(item => 
+      item.id.toLowerCase().includes(value.toLowerCase()) ||
+      item.title.toLowerCase().includes(value.toLowerCase()) ||
+      item.category.toLowerCase().includes(value.toLowerCase()) ||
+      item.auditStatus.toLowerCase().includes(value.toLowerCase())
+    )
+    setFilteredItems(filtered)
   }
 
   return (
@@ -75,9 +98,16 @@ export default function AdminAuditPage() {
               <CardTitle>Items List</CardTitle>
             </CardHeader>
             <CardContent>
+              <Input
+                placeholder="Filter items..."
+                value={filterValue}
+                onChange={handleFilter}
+                className="mb-4"
+              />
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>ID</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Audit Status</TableHead>
@@ -85,8 +115,9 @@ export default function AdminAuditPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map(item => (
+                  {filteredItems.map(item => (
                     <TableRow key={item.id}>
+                      <TableCell>{item.id}</TableCell>
                       <TableCell>{item.title}</TableCell>
                       <TableCell>{item.category}</TableCell>
                       <TableCell>{item.auditStatus}</TableCell>

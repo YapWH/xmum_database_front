@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderGuest'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Database, BookOpen, FileText } from 'lucide-react'
