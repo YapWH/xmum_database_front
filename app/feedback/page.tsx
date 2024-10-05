@@ -10,19 +10,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Combobox } from '@/components/ui/combobox'
 import { toast } from '@/hooks/use-toast'
-import { AuthProvider } from '../contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 const categoryOptions = [
-  { value: 'datasets', label: 'Datasets' },
-  { value: 'notes', label: 'Notes' },
-  { value: 'articles', label: 'Articles' },
+  { value: 'Datasets', label: 'Datasets' },
+  { value: 'Notes', label: 'Notes' },
+  { value: 'Articles', label: 'Articles' },
 ]
 
 export default function FeedbackPage() {
   const [email, setEmail] = useState('')
   const [group, setGroup] = useState('')
-  const [feedbackType, setFeedbackType] = useState('improvement')
+  const [feedbackType, setFeedbackType] = useState('')
   const [feedback, setFeedback] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,8 +34,8 @@ export default function FeedbackPage() {
     })
     // Reset form
     setEmail('')
-    setGroup('datasets')
-    setFeedbackType('improvement')
+    setGroup('')
+    setFeedbackType('')
     setFeedback('')
   }
 
@@ -64,12 +63,13 @@ export default function FeedbackPage() {
                   />
                 </div>
                 <div className='space-y-2'>
-                  <Label htmlFor="group">Group</Label><br/>
+                  <Label htmlFor="group">Group</Label>
                   <Combobox
-                    value=""
-                    onChange={setGroup} 
+                    value={group}
+                    onChange={(value) => setGroup(value)}
                     options={categoryOptions}
-                    placeholder='group' />
+                    placeholder='Select a group'
+                  />
                 </div>
                 <div className='space-y-2'>
                   <Label>Feedback Type</Label>
@@ -110,6 +110,5 @@ export default function FeedbackPage() {
         </div>
       </div>
     </ProtectedRoute>
-    
   )
 }

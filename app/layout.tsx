@@ -11,20 +11,17 @@ export const metadata = {
   description: 'A comprehensive database of datasets, notes, and articles',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout(
+  { children }: {children: React.ReactNode}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={'font-geist'}>
-        <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-            <Footer />
+            <AuthProvider>
+              {children}
+              <Footer />
+            </AuthProvider>
           </ThemeProvider>
-        </AuthProvider>
       </body>
     </html>
   )

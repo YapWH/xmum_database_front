@@ -19,7 +19,7 @@ export default function DatasetsSearchPage() {
       <div className="container mx-auto px-4 py-8">
         <Header />
         <h1 className="text-4xl font-bold mb-8">Search Datasets</h1>
-        <div className="mb-4"> {/* Increased margin-bottom */}
+        <div className="mb-4">
           <FilterPanel onFilter={handleFilter} />
         </div>
         <ItemGrid items={filteredDatasets} />

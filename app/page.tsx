@@ -1,8 +1,10 @@
 import Link from 'next/link'
-import Header from '@/components/HeaderGuest'
+import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Database, BookOpen, FileText } from 'lucide-react'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function HomePage() {
   return (

@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { toast } from '@/hooks/use-toast'
 import PlaceHolderDatasets from '@/placeholder'
 
@@ -38,12 +40,17 @@ export default function AdminAuditPage() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [editedItem, setEditedItem] = useState<Item | null>(null)
   const [filterValue, setFilterValue] = useState('')
+  const [selectedAuditStatuses, setSelectedAuditStatuses] = useState<string[]>([])
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     // Fetch items from API
     const fetchItems = async () => {
-      setItems(PlaceHolderDatasets)
-      setFilteredItems(PlaceHolderDatasets)
+      // Replace this with actual API call
+      const mockItems: Item[] = PlaceHolderDatasets
+      setItems(mockItems)
+      setFilteredItems(mockItems)
     }
     fetchItems()
   }, [])
@@ -68,21 +75,43 @@ export default function AdminAuditPage() {
   }
 
   const handleDelete = async (id: string) => {
+    setItemToDelete(id)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return
+
     // Replace this with actual API call to delete item
-    const updatedItems = items.filter(item => item.id !== id)
+    const updatedItems = items.filter(item => item.id !== itemToDelete)
     setItems(updatedItems)
     setFilteredItems(updatedItems)
+    setIsDeleteDialogOpen(false)
+    setItemToDelete(null)
     toast({ title: "Item deleted successfully" })
   }
 
   const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setFilterValue(value)
+    applyFilters(value, selectedAuditStatuses)
+  }
+
+  const handleAuditStatusChange = (status: string) => {
+    const updatedStatuses = selectedAuditStatuses.includes(status)
+      ? selectedAuditStatuses.filter(s => s !== status)
+      : [...selectedAuditStatuses, status]
+    setSelectedAuditStatuses(updatedStatuses)
+    applyFilters(filterValue, updatedStatuses)
+  }
+
+  const applyFilters = (searchValue: string, statuses: string[]) => {
     const filtered = items.filter(item => 
-      item.id.toLowerCase().includes(value.toLowerCase()) ||
-      item.title.toLowerCase().includes(value.toLowerCase()) ||
-      item.category.toLowerCase().includes(value.toLowerCase()) ||
-      item.auditStatus.toLowerCase().includes(value.toLowerCase())
+      (item.id.toLowerCase().includes(searchValue.toLowerCase()) ||
+      item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchValue.toLowerCase()) ||
+      item.auditStatus.toLowerCase().includes(searchValue.toLowerCase())) &&
+      (statuses.length === 0 || statuses.includes(item.auditStatus))
     )
     setFilteredItems(filtered)
   }
@@ -104,6 +133,23 @@ export default function AdminAuditPage() {
                 onChange={handleFilter}
                 className="mb-4"
               />
+              <div className="flex flex-wrap gap-4 mb-4">
+                {auditStatusOptions.map((status) => (
+                  <div key={status.value} className="flex items-center">
+                    <Checkbox
+                      id={`status-${status.value}`}
+                      checked={selectedAuditStatuses.includes(status.value)}
+                      onCheckedChange={() => handleAuditStatusChange(status.value)}
+                    />
+                    <label
+                      htmlFor={`status-${status.value}`}
+                      className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {status.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -179,6 +225,20 @@ export default function AdminAuditPage() {
           )}
         </div>
       </div>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this item? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

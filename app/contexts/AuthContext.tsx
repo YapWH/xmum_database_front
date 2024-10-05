@@ -11,6 +11,7 @@ type User = {
 
 type AuthContextType = {
   user: User | null
+  loading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 }
@@ -19,22 +20,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in on initial load
-    const checkAuth = async () => {
-      // Replace with actual API call to check authentication status
+    const initializeAuth = () => {
       const storedUser = localStorage.getItem('user')
       if (storedUser) {
         setUser(JSON.parse(storedUser))
       }
+      setLoading(false)
     }
-    checkAuth()
+
+    initializeAuth()
   }, [])
 
   const login = async (email: string, password: string) => {
     // Replace with actual API call to authenticate user
-    const mockUser: User = { id: '1', name: 'John Doe', email, role: 'user' }
+    let mockUser: User
+
+    if (email === 'admin@example.com' && password === 'adminpass') {
+      mockUser = { id: '1', name: 'Admin User', email, role: 'admin' }
+    } else {
+      mockUser = { id: '2', name: 'Regular User', email, role: 'user' }
+    }
+
     setUser(mockUser)
     localStorage.setItem('user', JSON.stringify(mockUser))
   }
@@ -45,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

@@ -6,6 +6,7 @@ import { Dataset } from '@/types'
 import { Upload, Search } from 'lucide-react'
 import PlaceHolderDatasets from '@/placeholder'
 import Header from '@/components/Header'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 const datasetsByTag: Record<string, Dataset[]> = {
   'machine-learning': PlaceHolderDatasets.filter((d) => d.tags.includes('machine learning')),
@@ -23,6 +24,7 @@ export default function DatasetsHomePage() {
   const randomDatasets = getRandomItems(PlaceHolderDatasets, 6)
 
   return (
+    <ProtectedRoute requiredRole='user'>
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
@@ -98,9 +100,8 @@ export default function DatasetsHomePage() {
             <ItemGrid items={items.slice(0, 3)} />
           </div>
         ))}
-
-        
       </div>
     </div>
+    </ProtectedRoute>
   )
 }

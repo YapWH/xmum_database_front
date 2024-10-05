@@ -7,9 +7,32 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Dataset } from '@/types'
+//import { Dataset } from '@/types'
 import { Download, ArrowLeft } from 'lucide-react'
 import ReportForm from '@/components/ReportForm'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import Image from 'next/image'
+
+interface Dataset{
+  id: string
+  title: string
+  description: string
+  category: string
+  subcategory: string
+  uploader: string
+  dateAdded: string
+  downloads: number
+  views: number
+  tags: string[]
+  likes: number
+  dislikes: number
+  source: string
+  datasetSize: string
+  fileFormat: string
+  auditStatus: string
+  dataType: string
+  previewData: any[]
+}
 
 // TODO: Fetch item details from the API
 const fetchItemDetails = async (category: string, id: string): Promise<Dataset> => {
@@ -29,6 +52,19 @@ const fetchItemDetails = async (category: string, id: string): Promise<Dataset> 
     source: 'https://example.com/sample-item',
     datasetSize: '11.5 MB',
     fileFormat: 'CSV',
+    auditStatus: 'Pending',
+    // dataType: 'csv',
+    // previewData: [
+    //   { id: 1, name: 'John Doe', age: 25 },
+    //   { id: 2, name: 'Jane Doe', age: 30 },
+    //   { id: 3, name: 'Alice', age: 35 },
+    //   { id: 4, name: 'Bob', age: 40 },
+    // ]
+    dataType: 'image',
+    previewData: [
+      '/logo-light.png',
+      '/logo-dark.png'
+    ]
   }
 }
 
@@ -66,6 +102,54 @@ export default function ItemDetailPage() {
 
   if (!item) {
     return <div>Loading...</div>
+  }
+
+  const renderPreview = () => {
+    switch (item.dataType) {
+      case 'image':
+        return (
+          <div className="grid grid-cols-3 gap-4">
+            {item.previewData.map((image, index) => (
+              <Image key={index} src={image} alt={`Preview ${index + 1}`} width={200} height={200} className="rounded-lg" />
+            ))}
+          </div>
+        )
+      case 'csv':
+        return (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {Object.keys(item.previewData[0]).map((key) => (
+                  <TableHead key={key}>{key}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {item.previewData.map((row, index) => (
+                <TableRow key={index}>
+                  {Object.values(row).map((value, cellIndex) => (
+                    <TableCell key={cellIndex}>{value as React.ReactNode}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )
+      case 'audio':
+        return (
+          <div className="space-y-4">
+            {item.previewData.map((audio, index) => (
+              <div key={index}>
+                <audio controls src={audio} className="w-full">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            ))}
+          </div>
+        )
+      default:
+        return <p>No preview available for this data type.</p>
+    }
   }
 
   return (
@@ -128,6 +212,10 @@ export default function ItemDetailPage() {
                   <Bar yAxisId="right" dataKey="downloads" fill="#82ca9d" name="Downloads" />
                 </BarChart>
               </ResponsiveContainer>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mt-8 mb-4">Preview</h3>
+              {renderPreview()}
             </div>
           </CardContent>
         </Card>
