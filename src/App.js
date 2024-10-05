@@ -34,7 +34,7 @@ function AppContent() {
   return (
     <>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ backgroundColor: 'primary', color: '#F5EFE6', mb: 1, boxShadow: 1 }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#003b88', color: '#F5EFE6', mb: 1, boxShadow: 1 }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" component="div">
             {getTitle()}

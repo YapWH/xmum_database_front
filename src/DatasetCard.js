@@ -21,7 +21,7 @@ const DatasetCard = ({ dataset, onClick }) => {
             background: isDarkMode ? '#424242' : '#f0f0f0',
         }}>
             <Box sx={{ 
-                background: '#1875d1',
+                background: '#003b88',
                 py: 2, 
                 px: 3,
                 display: 'flex',
@@ -41,7 +41,7 @@ const DatasetCard = ({ dataset, onClick }) => {
                 <Grid container spacing={2} sx={{ mt: 2 }}>
                     <Grid item xs={6}>
                         <Box display="flex" alignItems="center">
-                            <GetApp fontSize="small" sx={{ mr: 1, color: '#2196F3' }} />
+                            <GetApp fontSize="small" sx={{ mr: 1, color: '#060136' }} />
                             <Typography variant="body2" color="text.secondary">
                                 {dataset.download}
                             </Typography>
@@ -49,7 +49,7 @@ const DatasetCard = ({ dataset, onClick }) => {
                     </Grid>
                     <Grid item xs={6}>
                         <Box display="flex" alignItems="center">
-                            <CalendarToday fontSize="small" sx={{ mr: 1, color: '#2196F3' }} />
+                            <CalendarToday fontSize="small" sx={{ mr: 1, color: '#060136' }} />
                             <Typography variant="body2" color="text.secondary">
                                 {new Date(dataset.time).toLocaleDateString()}
                             </Typography>
