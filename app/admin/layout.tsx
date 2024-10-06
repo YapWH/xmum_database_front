@@ -2,18 +2,23 @@
 
 import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function AdminLayout(
     {children,}: {children: React.ReactNode}) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      router.push('/unauthorized')
+    if (loading == null) {
+      if (user == null) {
+        router.push('/login')
+      }
+      else if (user.role !== 'admin') {
+        router.push('/unauthorized')
+      }
     }
-  }, [user, router])
+  }, [user, loading, router])
 
   if (!user || user.role !== 'admin') {
     return null
