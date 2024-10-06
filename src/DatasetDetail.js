@@ -80,7 +80,7 @@ function DatasetDetail() {
     const handleSave = async () => {
         try {
             const keys = Object.keys(formData);
-            const skipKeys = ["title", "time", "total_downloads", "likes", "unlikes"];
+            const skipKeys = ["title", "time", "total_downloads", "likes", "unlikes" ,"total_views"];
 
             for (const key of keys) {
                 if (skipKeys.includes(key)) {
