@@ -192,7 +192,7 @@ function DatasetDetail() {
                                     <Grid item xs={3}>
                                         <AnimatedPaper elevation={1} sx={{ p: 1, textAlign: 'center' }}>
                                             <CloudDownload sx={{ color: themeColor, fontSize: 40 }} />
-                                            <Typography variant="h6" sx={{ color: themeColor }}>{dataset.download}</Typography>
+                                            <Typography variant="h6" sx={{ color: themeColor }}>{dataset.total_downloads}</Typography>
                                             <Typography variant="body2">Downloads</Typography>
                                         </AnimatedPaper>
                                     </Grid>
