@@ -1,12 +1,15 @@
+'use client'
+
 import Link from 'next/link'
 import ItemGrid from '@/components/ItemGrid'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dataset } from '@/types'
-import { Upload, Search } from 'lucide-react'
+import { Upload, Search, RefreshCw } from 'lucide-react'
 import PlaceHolderDatasets from '@/placeholder'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useEffect, useState } from 'react'
 
 const datasetsByTag: Record<string, Dataset[]> = {
   'machine-learning': PlaceHolderDatasets.filter((d) => d.tags.includes('machine learning')),
@@ -20,8 +23,17 @@ function getRandomItems(items: Dataset[], count: number): Dataset[] {
 }
 
 export default function DatasetsHomePage() {
+  const [randomItems, setRandomItems] = useState<Dataset[]>([])
+  //const randomDatasets = getRandomItems(PlaceHolderDatasets, 6)
 
-  const randomDatasets = getRandomItems(PlaceHolderDatasets, 6)
+  const fetchRandomItems = async () => {
+    const items: Dataset[] = PlaceHolderDatasets
+    setRandomItems(getRandomItems(items, 6))
+  }
+
+  useEffect(() => {
+    fetchRandomItems()
+  }, [])
 
   return (
     <ProtectedRoute requiredRole='user'>
@@ -87,11 +99,17 @@ export default function DatasetsHomePage() {
         <h2 className="text-3xl font-bold mb-6">Trending Datasets</h2>
         <ItemGrid items={PlaceHolderDatasets.slice(0, 6)} />
         
-        {/* Random Datasets*/}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-6">You Might Be Interested In</h2>
-          <ItemGrid items={randomDatasets} />
-        </div>
+        {/* Random Items */}
+        <section className="mt-12">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">You Might Be Interested In</h2>
+            <Button onClick={fetchRandomItems} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reload
+            </Button>
+          </div>
+          <ItemGrid items={randomItems} />
+        </section>
 
         {/* Datasets by Tag */}
         {Object.entries(datasetsByTag).map(([tag, items]) => (

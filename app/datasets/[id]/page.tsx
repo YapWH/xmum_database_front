@@ -6,12 +6,17 @@ import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts'
 //import { Dataset } from '@/types'
-import { Download, ArrowLeft } from 'lucide-react'
+import { Download, ArrowLeft, Save, Edit } from 'lucide-react'
 import ReportForm from '@/components/ReportForm'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import Image from 'next/image'
+import { Input } from '@/components/ui/input'
+import { useAuth } from '@/app/contexts/AuthContext'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 interface Dataset{
   id: string
@@ -30,14 +35,13 @@ interface Dataset{
   datasetSize: string
   fileFormat: string
   auditStatus: string
-  dataType: string
   previewData: any[]
 }
 
 // TODO: Fetch item details from the API
 const fetchItemDetails = async (category: string, id: string): Promise<Dataset> => {
   return {
-    id,
+    id: '1',
     title: 'Sample Item',
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non velit sed metus venenatis rutrum. Mauris eget pellentesque odio, non convallis nisi. Curabitur dignissim nulla et mauris efficitur, sodales vestibulum risus laoreet. Pellentesque posuere nisl et erat tristique luctus. Proin mattis pharetra consectetur. Duis tempor egestas mauris non facilisis. Vestibulum ac erat pharetra, lacinia mauris sed, interdum enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Morbi dui nunc, suscipit ac laoreet eu, sollicitudin nec orci. Morbi posuere erat vitae sem ullamcorper finibus. Etiam fermentum ornare urna, quis scelerisque tortor congue sed.",
     category:'Computer Vision',
@@ -53,29 +57,27 @@ const fetchItemDetails = async (category: string, id: string): Promise<Dataset> 
     datasetSize: '11.5 MB',
     fileFormat: 'CSV',
     auditStatus: 'Pending',
-    // dataType: 'csv',
-    // previewData: [
-    //   { id: 1, name: 'John Doe', age: 25 },
-    //   { id: 2, name: 'Jane Doe', age: 30 },
-    //   { id: 3, name: 'Alice', age: 35 },
-    //   { id: 4, name: 'Bob', age: 40 },
-    // ]
-    dataType: 'image',
     previewData: [
-      '/logo-light.png',
-      '/logo-dark.png'
+      { id: 1, name: 'John Doe', age: 25 },
+      { id: 2, name: 'Jane Doe', age: 30 },
+      { id: 3, name: 'Alice', age: 35 },
+      { id: 4, name: 'Bob', age: 40 },
     ]
+    // dataType: 'image',
+    // previewData: [
+    //   '/logo-light.png',
+    //   '/logo-dark.png'
+    // ]
   }
 }
 
-// TODO: Fetch views and downloads stats for the item
 const fetchItemStats = async (id: string) => {
   return [
-    { date: '2023-06-01', views: 100, downloads: 20 },
-    { date: '2023-06-08', views: 150, downloads: 30 },
-    { date: '2023-06-15', views: 200, downloads: 40 },
-    { date: '2023-06-22', views: 180, downloads: 35 },
-    { date: '2023-06-29', views: 250, downloads: 50 },
+    { date: '2023-06-01', views: 100, downloads: 20, likes: 10, dislikes: 2 },
+    { date: '2023-06-08', views: 150, downloads: 30, likes: 15, dislikes: 3 },
+    { date: '2023-06-15', views: 200, downloads: 40, likes: 20, dislikes: 4 },
+    { date: '2023-06-22', views: 180, downloads: 35, likes: 18, dislikes: 3 },
+    { date: '2023-06-29', views: 250, downloads: 50, likes: 25, dislikes: 5 },
   ]
 }
 
@@ -83,7 +85,10 @@ export default function ItemDetailPage() {
   const { category, id } = useParams()
   const router = useRouter()
   const [item, setItem] = useState<Dataset | null>(null)
-  const [stats, setStats] = useState<{ date: string; views: number; downloads: number; }[]>([])
+  const [stats, setStats] = useState<{ date: string; views: number; downloads: number; likes:number, dislikes:number }[]>([])
+  const [isEditing, setIsEditing] = useState(false)
+  const { user } = useAuth()
+  const [combinedGraph, setCombinedGraph] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,16 +101,50 @@ export default function ItemDetailPage() {
   }, [category, id])
 
   const handleDownload = () => {
-    // Implement download logic here
+    //TODO: Implement download logic here
     console.log('Downloading item:', item?.title)
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true)
+  }
+
+  const handleSave = async() => {
+    //TODO: Implement save logic
+    setIsEditing(false)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setItem(prev => prev ? { ...prev, [name]: value } : null)
+  }
+
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const tags = e.target.value.split(',').map(tag => tag.trim())
+    setItem(prev => prev ? { ...prev, tags } : null)
   }
 
   if (!item) {
     return <div>Loading...</div>
   }
 
+  const renderChart = (data: any[], dataKeys: string[], colors: string[]) => (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        {dataKeys.map((key, index) => (
+          <Line key={key} type="monotone" dataKey={key} stroke={colors[index]} />
+        ))}
+      </LineChart>
+    </ResponsiveContainer>
+  )
+
   const renderPreview = () => {
-    switch (item.dataType) {
+    switch (item.fileFormat.toLowerCase()) {
       case 'image':
         return (
           <div className="grid grid-cols-3 gap-4">
@@ -152,6 +191,15 @@ export default function ItemDetailPage() {
     }
   }
 
+  const handlePreviewDataChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    try {
+      const previewData = JSON.parse(e.target.value)
+      setItem(prev => prev ? { ...prev, previewData } : null)
+    } catch (error) {
+      console.error('Invalid JSON for preview data')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
@@ -163,10 +211,20 @@ export default function ItemDetailPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
+
         <Card className="mt-8">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-3xl font-bold mb-6">{item.title}</CardTitle>
+              {isEditing ? (
+                <Input
+                  name="title"
+                  value={item.title}
+                  onChange={handleInputChange}
+                  className="text-3xl font-bold mb-6"
+                />
+              ) : (
+                <CardTitle className="text-3xl font-bold mb-6">{item.title}</CardTitle>
+              )}
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
             </div>
             <div className="flex space-x-2">
@@ -174,10 +232,34 @@ export default function ItemDetailPage() {
                 <Download className="mr-2 h-4 w-4" /> Download
               </Button>
               <ReportForm itemId={item.id} itemTitle={item.title} />
+              {user && user.role === 'admin' && (
+                <Button onClick={isEditing ? handleSave : handleEdit}>
+                  {isEditing ? (
+                    <>
+                      <Save className="mr-2 h-4 w-4" /> Save
+                    </>
+                  ) : (
+                    <>
+                      <Edit className="mr-2 h-4 w-4" /> Edit
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </CardHeader>
+
           <CardContent>
-            <p className="mb-4" style={{ color: '#808080' }}>{item.description}</p>
+            {isEditing ? (
+              <Textarea
+                name="description"
+                value={item.description}
+                onChange={handleInputChange}
+                className="mb-4"
+                rows={5}
+              />
+            ) : (
+              <p className="mb-4" style={{ color: '#808080' }}>{item.description}</p>
+            )}
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>Uploader: {item.uploader}</div>
               <div>Date Added: {new Date(item.dateAdded).toLocaleDateString()}</div>
@@ -186,37 +268,115 @@ export default function ItemDetailPage() {
               <div>Likes: {item.likes}</div>
               <div>Dislikes: {item.dislikes}</div>
               <div>Dataset Size: {item.datasetSize}</div>
-              <div>File Format: {item.fileFormat}</div>
-              <div className="mb-2">
-                Tags: 
-                {item.tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="mr-2">
-                    {tag}
-                  </Badge>
-                ))}
+              {isEditing ? (
+                <div className='mb-4'>
+                  <div>File Format:</div>
+                  <Input
+                    id='fileformat'
+                    name="fileFormat"
+                    value={item.fileFormat}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              ) : (
+                <div>File Format: {item.fileFormat}</div>
+              )}
+              <div className="mb-4">
+                {isEditing ? (
+                  <div>
+                    <div>Tags:</div>
+                    <Input
+                      id='tags'
+                      name="tags"
+                      value={item.tags.join(', ')}
+                      onChange={handleTagsChange}
+                    />
+                  </div>
+                ) : (
+                  <>
+                  Tags:  
+                  {item.tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="mr-2">
+                      {tag}
+                    </Badge>
+                  ))}
+                  </>
+                )}
               </div>
-              
             </div>
-            <div>Source: <a href={item.source} className="text-primary hover:underline">{item.source}</a></div>
-            <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4">Views and Downloads Over Time</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={stats}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="views" fill="#8884d8" name="Views" />
-                  <Bar yAxisId="right" dataKey="downloads" fill="#82ca9d" name="Downloads" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold mt-8 mb-4">Preview</h3>
-              {renderPreview()}
-            </div>
+            <>
+            {isEditing ? (
+              <div>
+                <div>Source:</div>
+                <Input
+                  id='source'
+                  name="source"
+                  value={item.source}
+                  onChange={handleInputChange}
+                />
+              </div>
+            ) : (
+              <div>Source: <a href={item.source} className="text-primary hover:underline">{item.source}</a></div>
+            )}
+            </>
+
+            <section className='mt-8'>
+              {isEditing ? (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6">Preview</h2>
+                  <Textarea
+                    id='previewData'
+                    value={JSON.stringify(item.previewData, null, 2)}
+                    onChange={handlePreviewDataChange}
+                    name='previewData'
+                    rows={10}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-3xl font-bold mb-6">Preview</h2>
+                  {renderPreview()}
+                </div>
+              )}
+            </section>
+
+            <section className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold">Statistics</h3>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="combined-graph">Combined Graph</Label>
+                  <Switch
+                    id="combined-graph"
+                    checked={combinedGraph}
+                    onCheckedChange={setCombinedGraph}
+                  />
+                </div>
+              </div>
+              {combinedGraph ? (
+                renderChart(stats, ['views', 'downloads', 'likes', 'dislikes'], ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'])
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="text-xl font-semibold mb-2">Views Over Time</h4>
+                    {renderChart(stats, ['views'], ['#8884d8'])}
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold mb-2">Downloads Over Time</h4>
+                    {renderChart(stats, ['downloads'], ['#82ca9d'])}
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold mb-2">Likes Over Time</h4>
+                    {renderChart(stats, ['likes'], ['#ffc658'])}
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-semibold mb-2">Dislikes Over Time</h4>
+                    {renderChart(stats, ['dislikes'], ['#ff7300'])}
+                  </div>
+                </div>
+              )}
+            </section>
+
+            
           </CardContent>
         </Card>
       </div>
