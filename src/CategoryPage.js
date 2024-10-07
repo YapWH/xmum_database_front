@@ -12,7 +12,7 @@ import { useTheme, ThemeProvider } from '@mui/material/styles';
 import DatasetCard from './DatasetCard';
 import { motion } from 'framer-motion';
 
-axios.defaults.baseURL = 'http://0.0.0.0:8000';
+axios.defaults.baseURL = 'https://dataset.mini-bocchi.top/';
 
 function CategoryPage() {
   const { category } = useParams();

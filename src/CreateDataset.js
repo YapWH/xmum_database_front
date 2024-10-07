@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button, Alert, Container, Typography, Box, Input } from '@mui/material';
 
-axios.defaults.baseURL = "http://0.0.0.0:8000";
+axios.defaults.baseURL = "https://dataset.mini-bocchi.top/";
 
 const CreateDataset = () => {
   const [title, setTitle] = useState('');

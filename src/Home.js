@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DatasetCard from './DatasetCard'; // 导入 DatasetCard 组件
 
-axios.defaults.baseURL = 'http://0.0.0.0:8000';
+axios.defaults.baseURL = 'https://dataset.mini-bocchi.top/';
 
 function HomePage() {
   const navigate = useNavigate();

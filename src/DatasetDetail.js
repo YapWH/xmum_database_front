@@ -105,7 +105,8 @@ function DatasetDetail() {
             .then(response => {
                 const downloadLinks = response.data;
                 downloadLinks.forEach(link => {
-                    window.open(link, '_blank');
+                    const updatedLink = link.replace('http://minio:9000', 'https://download.mini-bocchi.top');
+                    window.open(updatedLink, '_blank');
                 });
             })
             .catch(error => {

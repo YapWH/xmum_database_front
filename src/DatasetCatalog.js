@@ -20,7 +20,7 @@ import { Search as SearchIcon, ThumbUp, ThumbDown, CalendarToday, GetApp } from 
 import { Link } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-axios.defaults.baseURL = 'http://0.0.0.0:8000';
+axios.defaults.baseURL = 'https://dataset.mini-bocchi.top/';
 
 const theme = createTheme({
   palette: {
