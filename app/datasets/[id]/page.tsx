@@ -17,6 +17,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { DownloadButton } from '@/components/DownloadButton'
 
 interface Dataset{
   id: string
@@ -228,9 +229,7 @@ export default function ItemDetailPage() {
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
             </div>
             <div className="flex space-x-2">
-              <Button onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" /> Download
-              </Button>
+              <DownloadButton itemId={item.id} itemName={item.title} />
               <ReportForm itemId={item.id} itemTitle={item.title} />
               {user && user.role === 'admin' && (
                 <Button onClick={isEditing ? handleSave : handleEdit}>
