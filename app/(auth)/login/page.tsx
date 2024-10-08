@@ -70,11 +70,11 @@ export default function LoginPage() {
         <CardFooter className="flex flex-col space-y-2">
           <div className="mx-auto flex items-center space-x-1">
             <span className="text-sm text-muted-foreground">Don't have an account?</span>
-            <Link href="/auth/register" className="text-sm underline underline-offset-4 hover:text-primary">
+            <Link href="/register" className="text-sm underline underline-offset-4 hover:text-primary">
               Register
             </Link>
           </div>
-          <Link href="/auth/forgot-password" className="text-sm underline underline-offset-4 hover:text-primary">
+          <Link href="/forgot-password" className="text-sm underline underline-offset-4 hover:text-primary">
             Forgot your password?
           </Link>
         </CardFooter>

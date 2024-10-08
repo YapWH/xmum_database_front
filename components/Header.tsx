@@ -41,6 +41,7 @@ export default function Header() {
           </>
         ) : (
           <>
+            <ModeToggle />
             <Link href="/login">
             <Button>Login/Register</Button>
             </Link>
