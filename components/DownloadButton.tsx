@@ -17,9 +17,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 interface DownloadButtonProps {
   itemId: string
   itemName: string
+  creatorName: string
 }
 
-export function DownloadButton({ itemId, itemName }: DownloadButtonProps) {
+export function DownloadButton({ itemId, itemName, creatorName }: DownloadButtonProps) {
   const [showAgreement, setShowAgreement] = useState(false)
   const [agreed, setAgreed] = useState(false)
 
@@ -47,25 +48,37 @@ export function DownloadButton({ itemId, itemName }: DownloadButtonProps) {
               Please read and accept our license agreement before downloading.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-            <h4 className="mb-4 text-sm font-medium">Website Item Usage Agreement</h4>
+          <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+            <h4 className="mb-4 text-sm font-medium">License Agreement for {itemName}</h4>
             <p className="text-sm text-muted-foreground">
-              1. Acceptance of Terms: By downloading any item from our website, you agree to be bound by the terms and conditions of this agreement.
+              1. Acceptance of Terms: By downloading this item, you agree to be bound by the terms and conditions of this license agreement.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              2. License Grant: We grant you a non-exclusive, non-transferable license to use the downloaded item for personal or commercial purposes, subject to the restrictions in this agreement.
+              2. License Grant: We grant you a limited, non-exclusive license to use the downloaded item, subject to the restrictions in this agreement.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              3. Restrictions: You may not redistribute, sell, lease, license, or sub-license the item, or use it as part of a product for sale, without explicit permission from us.
+              3. Modification: You are allowed to modify the downloaded item. However, you must give credit to the original creator, {creatorName}, in any derivative works.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              4. Copyright: All items remain the property of their respective copyright holders. You may not claim intellectual or exclusive ownership over any of our items, modified or unmodified.
+              4. Distribution: You may share or distribute this item internally within campus. External distribution (outside XMUM) is strictly prohibited.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              5. Liability: Items are provided "as is" without warranty of any kind, express or implied. In no event shall we be liable for any claim, damages or other liability arising from the use of the item.
+              5. Usage Restrictions: The item and any derivatives may only be used for personal and non-commercial applications, and only within your campus.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              6. Termination: This license is effective until terminated by you or us. Your rights under this license will terminate automatically without notice if you fail to comply with any of its terms.
+              6. Credit: In all uses and modifications of the item, you must provide clear credit to the original creator, {creatorName}.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              7. No Transfer: You may not transfer your rights under this license to any third party outside XMUM.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              8. Termination: This license is effective until terminated. Your rights under this license will terminate automatically without notice if you fail to comply with any of its terms.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              9. Disclaimer of Warranty: The item is provided "as is" without warranty of any kind, either expressed or implied.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              10. Limitation of Liability: In no event shall we or the creator be liable for any damages arising out of the use of or inability to use the item.
             </p>
           </ScrollArea>
           <div className="flex items-center space-x-2">

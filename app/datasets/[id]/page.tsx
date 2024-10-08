@@ -229,7 +229,7 @@ export default function ItemDetailPage() {
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
             </div>
             <div className="flex space-x-2">
-              <DownloadButton itemId={item.id} itemName={item.title} />
+              <DownloadButton itemId={item.id} itemName={item.title} creatorName={item.uploader} />
               <ReportForm itemId={item.id} itemTitle={item.title} />
               {user && user.role === 'admin' && (
                 <Button onClick={isEditing ? handleSave : handleEdit}>
