@@ -38,9 +38,9 @@ const noteData = {
   contentType: 'images', // or 'pdf'
   content: '/sample.pdf', // This should be the path to your PDF file
   images: [
-    '/placeholder.jpg?height=600&width=800',
-    '/placeholder.jpg?height=600&width=800',
-    '/placeholder.jpg?height=600&width=800',
+    '/notes.jpg',
+    '/placeholder.jpg',
+    '/placeholder.jpg',
   ],
 }
 
@@ -84,13 +84,13 @@ export default function NoteDetailsPage() {
                   <Carousel className="w-full h-full">
                     <CarouselContent>
                       {noteData.images.map((image, index) => (
-                        <CarouselItem key={index} className="h-full">
-                          <div className="relative h-full w-full">
+                        <CarouselItem key={index} className="w-full h-full">
+                          <div>
                             <Image
                               src={image}
                               alt={`Image ${index + 1}`}
-                              fill
-                              style={{ objectFit: 'contain' }}
+                              width={600}
+                              height={100}
                             />
                           </div>
                         </CarouselItem>
