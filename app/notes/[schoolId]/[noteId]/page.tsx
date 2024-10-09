@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ChevronLeft, Heart, Calendar } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import {
@@ -57,17 +57,19 @@ export default function NoteDetailsPage() {
             Back
           </Button>
           <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/notes">Notes</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/notes/${params.schoolId}`}>{noteData.school}</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="#">{noteData.title}</BreadcrumbLink>
-            </BreadcrumbItem>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/notes">Notes</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/notes/${params.schoolId}`}>{noteData.school}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">{noteData.title}</BreadcrumbLink>
+              </BreadcrumbItem>
+            </BreadcrumbList>
           </Breadcrumb>
         </div>
 
