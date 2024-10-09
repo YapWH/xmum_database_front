@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ChevronLeft, Heart, Search } from 'lucide-react'
+import { ChevronLeft, Heart, NotebookText, Search } from 'lucide-react'
 import Header from '@/components/Header'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 
 // Mock data
 const schoolData = {
@@ -70,6 +71,17 @@ export default function SchoolNotesPage() {
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/notes">Notes</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/notes/${params.schoolId}`}>{schoolData.name}</BreadcrumbLink>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
