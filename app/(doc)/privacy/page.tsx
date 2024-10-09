@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 
 export default function PrivacyPolicyPage() {
   return (
@@ -168,7 +169,7 @@ export default function PrivacyPolicyPage() {
 <p>If you have any questions about this Privacy Policy, You can contact us:</p>
 <ul>
 <li>By email: <a href="mailto:"></a></li>
-<li>By visiting this page on our website: <a href="/feedback" rel="external nofollow noopener" target="_blank">Feedback</a></li>
+<li>By visiting this page on our website: <Link href={'/feedback'}>Feedback</Link></li>
 </ul>
           </CardContent>
         </Card>
