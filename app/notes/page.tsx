@@ -27,7 +27,7 @@ export default function NotesHomePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Header />
-      <h1 className="text-3xl font-bold text-center mb-8">Notes</h1>
+      <h1 className="text-6xl font-bold text-center mb-8">Notes</h1>
       
       {/* Search Bar */}
       <div className="max-w-md mx-auto mb-12">
