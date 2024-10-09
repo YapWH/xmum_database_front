@@ -16,6 +16,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import Header from '@/components/Header'
+import { Badge } from '@/components/ui/badge'
 
 // Dynamically import PDFViewer component
 const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
@@ -142,9 +143,7 @@ export default function NoteDetailsPage() {
                   <h2 className="font-semibold mb-2">Tags</h2>
                   <div className="flex flex-wrap gap-2">
                     {noteData.tags.map((tag, index) => (
-                      <span key={index} className="bg-gray-200 px-2 py-1 rounded-full text-sm">
-                        {tag}
-                      </span>
+                      <Badge key={index} variant="secondary" className="mr-2">{tag}</Badge>
                     ))}
                   </div>
                 </div>
