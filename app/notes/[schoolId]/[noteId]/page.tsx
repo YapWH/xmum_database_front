@@ -15,6 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import Header from '@/components/Header'
 
 // Dynamically import PDFViewer component
 const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
@@ -38,9 +39,9 @@ const noteData = {
   contentType: 'images', // or 'pdf'
   content: '/sample.pdf', // This should be the path to your PDF file
   images: [
-    '/placeholder.jpg?height=600&width=800',
-    '/placeholder.jpg?height=600&width=800',
-    '/placeholder.jpg?height=600&width=800',
+    '/placeholder.jpg',
+    '/notes.jpg',
+    '/icon.jpeg',
   ],
 }
 
@@ -51,6 +52,7 @@ export default function NoteDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        <Header />
         <div className="flex items-center mb-6">
           <Button variant="ghost" onClick={() => router.back()} className="mr-4 rounded-md">
             <ChevronLeft className="h-4 w-4 mr-2" />
@@ -76,22 +78,22 @@ export default function NoteDetailsPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Note Content */}
           <div className="lg:w-2/3">
-            <Card className="h-[600px] overflow-hidden rounded-xl">
+            <Card className="h-[600px] rounded-xl">
               <CardContent className="p-6 h-full">
                 {noteData.contentType === 'pdf' ? (
                   <PDFViewer file={noteData.content} />
                 ) : (
-                  <Carousel className="w-full h-full">
+                  <Carousel className="w-full h-full" opts={{ align: "start", loop: true, }}>
                     <CarouselContent>
                       {noteData.images.map((image, index) => (
-                        <CarouselItem key={index} className="h-full">
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={image}
-                              alt={`Image ${index + 1}`}
-                              fill
-                              style={{ objectFit: 'contain' }}
-                            />
+                        <CarouselItem key={index} className="h-full flex justify-center items-center">
+                          <div className='relative w-full h-[550px]'>
+                          <Image
+                            src={image}
+                            alt={`Image ${index + 1}`}
+                            fill
+                            style={{objectFit: 'contain'}}
+                          />
                           </div>
                         </CarouselItem>
                       ))}
