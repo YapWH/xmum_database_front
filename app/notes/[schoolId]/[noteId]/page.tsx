@@ -84,13 +84,15 @@ export default function NoteDetailsPage() {
                   <Carousel className="w-full h-full">
                     <CarouselContent>
                       {noteData.images.map((image, index) => (
-                        <CarouselItem key={index} className="w-full h-full">
+                        <CarouselItem key={index} className="w-full">
                           <div>
                             <Image
                               src={image}
                               alt={`Image ${index + 1}`}
                               width={600}
                               height={100}
+                              layout="fill"  // 让图片填充整个父容器
+                              objectFit="contain"  // 保持比例，内容不被裁剪
                             />
                           </div>
                         </CarouselItem>
