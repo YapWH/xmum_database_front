@@ -9,6 +9,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 
+// Mock data for articles
+const articles = [
+  { id: 1, title: "The Future of AI in Everyday Life", description: "An in-depth look at how artificial intelligence is shaping our world", image: "/placeholder.jpg" },
+  { id: 2, title: "Sustainable Energy Solutions", description: "Exploring innovative approaches to renewable energy", image: "/placeholder.jpg" },
+  { id: 3, title: "The Rise of Quantum Computing", description: "Understanding the potential of quantum computers", image: "/placeholder.jpg" },
+]
+
+// Mock data for authors
+const authors = [
+  { id: 1, name: "Dr. Jane Smith", expertise: "AI and Machine Learning", image: "/placeholder.jpg" },
+  { id: 2, name: "Prof. John Doe", expertise: "Renewable Energy", image: "/placeholder.jpg" },
+  { id: 3, name: "Dr. Emily Brown", expertise: "Quantum Physics", image: "/placeholder.jpg" },
+]
+
 export default function ArticlesHomePage() {
   const [loading, setLoading] = useState(true)
 
@@ -23,10 +37,21 @@ export default function ArticlesHomePage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <section className="text-center py-20 bg-blue-600 rounded-lg mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">Discover Inspiring Articles</h1>
-          <p className="text-xl text-white mb-8">Explore a world of knowledge from our expert authors</p>
-          <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">Start Reading</Button>
+        <section 
+          className="text-center py-20 rounded-lg mb-12 bg-cover bg-center relative overflow-hidden"
+          style={{
+            backgroundImage: "url('/placeholder.jpg')",
+          }}
+        >
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="relative z-10">
+            <h1 className="text-5xl font-bold text-white mb-4">Discover Inspiring Articles</h1>
+            <p className="text-xl text-white mb-8">Explore a world of knowledge from our expert authors</p>
+            <Link href="/articles/articles">
+              <Button size="lg" className="bg-white text-primary hover:bg-gray-100">Start Reading</Button>
+            </Link>
+          </div>
         </section>
 
         <div className="max-w-2xl mx-auto mb-12">
@@ -47,20 +72,20 @@ export default function ArticlesHomePage() {
             <div className="md:flex">
               <div className="md:w-1/3">
                 <Image 
-                  src="/placeholder.jpg?height=300&width=400" 
-                  alt="Featured Article" 
+                  src={articles[0].image}
+                  alt={articles[0].title}
                   width={400} 
                   height={300} 
                   className="object-cover w-full h-full"
                 />
               </div>
               <div className="md:w-2/3 p-6">
-                <CardTitle className="text-2xl mb-2">The Future of AI in Everyday Life</CardTitle>
-                <CardDescription className="mb-4">An in-depth look at how artificial intelligence is shaping our world</CardDescription>
+                <CardTitle className="text-2xl mb-2">{articles[0].title}</CardTitle>
+                <CardDescription className="mb-4">{articles[0].description}</CardDescription>
                 <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                 <div className="flex justify-between items-center">
-                  <Link href="/articles/featured" passHref>
-                    <Button className="bg-blue-600 text-white hover:bg-blue-700">Read More</Button>
+                  <Link href={`/articles/${articles[0].id}`}>
+                    <Button className="w-full">Read More</Button>
                   </Link>
                 </div>
               </div>
@@ -71,31 +96,31 @@ export default function ArticlesHomePage() {
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-6">Featured Authors</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((author) => (
-              <Card key={author} className="hover:shadow-lg transition-shadow duration-300">
+            {authors.map((author) => (
+              <Card key={author.id} className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="text-center">
                   {loading ? (
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-300 animate-pulse"></div>
                   ) : (
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
                       <Image 
-                        src={`/placeholder.jpg?height=96&width=96`} 
-                        alt={`Author ${author}`} 
-                        width={96} 
-                        height={96} 
-                        className="object-cover"
+                        src={author.image}
+                        alt={author.name}
+                        width={100} 
+                        height={100} 
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}
-                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto"></div> : `Author ${author}`}</CardTitle>
+                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto"></div> : author.name}</CardTitle>
                   <CardDescription>
-                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mt-2"></div> : `Expert in Topic ${author}`}
+                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mt-2"></div> : `Expert in ${author.expertise}`}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <Link href={`/authors/${author}`} passHref>
-                    <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
-                      {loading ? <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div> : 'View Profile'}
+                  <Link href={`/articles/${author.id}`}>
+                    <Button className="w-full">
+                      {loading ? <div className="w-full"></div> : 'More from Author'}
                     </Button>
                   </Link>
                 </CardContent>
@@ -107,12 +132,12 @@ export default function ArticlesHomePage() {
         <section>
           <h2 className="text-3xl font-semibold mb-6">Latest Articles</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((article) => (
-              <Card key={article} className="hover:shadow-lg transition-shadow duration-300">
+            {articles.map((article) => (
+              <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4"></div> : `Article ${article}`}</CardTitle>
+                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4"></div> : article.title}</CardTitle>
                   <CardDescription>
-                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mt-2"></div> : `A brief description of Article ${article}`}
+                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mt-2"></div> : article.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -126,9 +151,9 @@ export default function ArticlesHomePage() {
                     <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                   )}
                   <div className="flex justify-between items-center">
-                    <Link href={`/articles/${article}`} passHref>
-                      <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                        {loading ? <div className="h-4 bg-gray-300 rounded w-16"></div> : 'Read More'}
+                    <Link href={`/articles/${article.id}`}>
+                      <Button className="w-full">
+                        {loading ? <div className="w-full"></div> : 'Read More'}
                       </Button>
                     </Link>
                     <div className="flex space-x-2">
@@ -146,9 +171,9 @@ export default function ArticlesHomePage() {
         </section>
 
         <div className="text-center mt-8">
-          <Button variant="outline" size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
-            Load More Articles
-          </Button>
+          <Link href="/articles/collection">
+            <Button className="w-18">Load More Articles</Button>
+          </Link>
         </div>
       </main>
     </div>
