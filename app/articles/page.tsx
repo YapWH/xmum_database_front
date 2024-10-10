@@ -48,7 +48,7 @@ export default function ArticlesHomePage() {
           <div className="relative z-10">
             <h1 className="text-5xl font-bold text-white mb-4">Discover Inspiring Articles</h1>
             <p className="text-xl text-white mb-8">Explore a world of knowledge from our expert authors</p>
-            <Link href="/articles/articles">
+            <Link href="/articles/collection">
               <Button size="lg" className="bg-white text-primary hover:bg-gray-100">Start Reading</Button>
             </Link>
           </div>
@@ -118,7 +118,7 @@ export default function ArticlesHomePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <Link href={`/articles/${author.id}`}>
+                  <Link href={`/articles/author/${author.id}`}>
                     <Button className="w-full">
                       {loading ? <div className="w-full"></div> : 'More from Author'}
                     </Button>
