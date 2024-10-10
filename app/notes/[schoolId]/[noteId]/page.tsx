@@ -9,8 +9,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { ChevronLeft, Heart, Calendar, Edit, Check, X, ChevronsUpDown } from 'lucide-react'
-import dynamic from 'next/dynamic'
+import { ChevronLeft, Heart, Calendar, Edit, Check, X, } from 'lucide-react'
+import { Worker, Viewer } from '@react-pdf-viewer/core'
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/default-layout/lib/styles/index.css'
 import {
   Carousel,
   CarouselContent,
@@ -21,7 +24,7 @@ import {
 import Header from '@/components/Header'
 import { Badge } from '@/components/ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
+import { useAuth } from '@/app/contexts/AuthContext'
 
 // Mock data for a single note
 const noteData = {
@@ -36,7 +39,7 @@ const noteData = {
   course: 'Introduction to Programming',
   tags: ['programming', 'basics', 'computer science'],
   likes: 42,
-  contentType: 'images', // or 'pdf'
+  contentType: 'pdf', // or 'pdf'
   content: '/sample.pdf', // This should be the path to your PDF file
   images: [
     '/placeholder.jpg',
@@ -81,27 +84,43 @@ export default function NoteDetailsPage() {
   const params = useParams()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
-  const [editedNote, setEditedNote] = useState(noteData)
-  const [originalNote, setOriginalNote] = useState(noteData)
+  const [Note, setNote] = useState(noteData)
   const [likes, setLikes] = useState(noteData.likes)
   const [isLiked, setIsLiked] = useState(false)
   const [tagInput, setTagInput] = useState('')
-  const [tagPopoverOpen, setTagPopoverOpen] = useState(false)
+  const [filteredTags, setFilteredTags] = useState<string[]>([])
+  const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false)
+  const { user } = useAuth()
 
   const [availableProgrammes, setAvailableProgrammes] = useState(programmes)
   const [availableCourses, setAvailableCourses] = useState(courses)
 
-  useEffect(() => {
-    if (editedNote.school) {
-      setAvailableProgrammes(programmes.filter(p => p.schoolId === editedNote.school))
-    }
-  }, [editedNote.school])
+  const defaultLayoutPluginInstance = defaultLayoutPlugin()
 
   useEffect(() => {
-    if (editedNote.programme) {
-      setAvailableCourses(courses.filter(c => c.programmeId === editedNote.programme))
+    if (Note.school) {
+      setAvailableProgrammes(programmes.filter(p => p.schoolId === Note.school))
     }
-  }, [editedNote.programme])
+  }, [Note.school])
+
+  useEffect(() => {
+    if (Note.programme) {
+      setAvailableCourses(courses.filter(c => c.programmeId === Note.programme))
+    }
+  }, [Note.programme])
+
+  useEffect(() => {
+    const filtered  = predefinedTags
+      .filter(tag => tag.toLowerCase().includes(tagInput.toLowerCase()) && !Note.tags.includes(tag))
+      .sort((a, b) => {
+        const aIndex = a.toLowerCase().indexOf(tagInput.toLowerCase())
+        const bIndex = b.toLowerCase().indexOf(tagInput.toLowerCase())
+        if (aIndex !== bIndex) return aIndex - bIndex
+        return a.localeCompare(b)
+      })
+    setFilteredTags(filtered)
+    setIsTagPopoverOpen(tagInput.length > 0 && filtered.length > 0)
+  }, [tagInput, Note.tags])
 
   const handleLike = () => {
     if (isLiked) {
@@ -113,39 +132,39 @@ export default function NoteDetailsPage() {
   }
 
   const handleEdit = () => {
-    setOriginalNote(editedNote)
+    setNote(Note)
     setIsEditing(true)
   }
 
   const handleSave = () => {
     // Here you would typically send the updated data to your backend
-    console.log('Saving edited note:', editedNote)
+    console.log('Saving edited note:', Note)
     setIsEditing(false)
   }
 
   const handleCancel = () => {
-    setEditedNote(originalNote)
+    setNote(Note)
     setIsEditing(false)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setEditedNote({ ...editedNote, [e.target.name]: e.target.value })
+    setNote({ ...Note, [e.target.name]: e.target.value })
   }
 
   const handleSelectChange = (name: string, value: string) => {
-    setEditedNote({ ...editedNote, [name]: value })
+    setNote({ ...Note, [name]: value })
   }
 
   const handleAddTag = (tag: string) => {
-    if (tag && !editedNote.tags.includes(tag)) {
-      setEditedNote({ ...editedNote, tags: [...editedNote.tags, tag] })
+    if (tag && !Note.tags.includes(tag)) {
+      setNote({ ...Note, tags: [...Note.tags, tag] })
       setTagInput('')
-      setTagPopoverOpen(false)
+      setIsTagPopoverOpen(false)
     }
   }
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setEditedNote({ ...editedNote, tags: editedNote.tags.filter(tag => tag !== tagToRemove) })
+    setNote({ ...Note, tags: Note.tags.filter(tag => tag !== tagToRemove) })
   }
 
   return (
@@ -164,11 +183,11 @@ export default function NoteDetailsPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/notes/${params.schoolId}`}>{editedNote.school}</BreadcrumbLink>
+              <BreadcrumbLink href={`/notes/${params.schoolId}`}>{Note.school}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">{editedNote.title}</BreadcrumbLink>
+              <BreadcrumbLink href="#">{Note.title}</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
           </Breadcrumb>
@@ -177,16 +196,18 @@ export default function NoteDetailsPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Note Content */}
           <div className="lg:w-2/3">
-            <Card className="h-[600px] rounded-xl">
+            <Card className="h-[800px] rounded-xl">
               <CardContent className="p-6 h-full">
                 {noteData.contentType === 'pdf' ? (
-                  <></>
+                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                    <Viewer fileUrl={noteData.content} plugins={[defaultLayoutPluginInstance]} />
+                  </Worker>
                 ) : (
                   <Carousel className="w-full h-full" opts={{ align: "start", loop: true, }}>
                     <CarouselContent>
                       {noteData.images.map((image, index) => (
                         <CarouselItem key={index} className="h-full flex justify-center items-center">
-                          <div className="relative w-full h-[550px]">
+                          <div className="relative w-full h-[750px]">
                             <Image
                               src={image}
                               alt={`Image ${index + 1}`}
@@ -212,116 +233,112 @@ export default function NoteDetailsPage() {
               <CardContent className="p-6">
                 {isEditing ? (
                   <div className="space-y-4">
-                  <Input
-                    name="title"
-                    value={editedNote.title}
-                    onChange={handleInputChange}
-                    placeholder="Title"
-                  />
-                  <Textarea
-                    name="description"
-                    value={editedNote.description}
-                    onChange={handleInputChange}
-                    placeholder="Description"
-                  />
-                  <Select
-                    value={editedNote.school}
-                    onValueChange={(value) => handleSelectChange('school', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a school" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {schools.map((school) => (
-                        <SelectItem key={school.id} value={school.id}>{school.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={editedNote.programme}
-                    onValueChange={(value) => handleSelectChange('programme', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a programme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableProgrammes.map((programme) => (
-                        <SelectItem key={programme.id} value={programme.id}>{programme.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={editedNote.course}
-                    onValueChange={(value) => handleSelectChange('course', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a course" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableCourses.map((course) => (
-                        <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div>
-                    <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={tagPopoverOpen}
-                          className="w-full justify-between"
-                        >
-                          {tagInput || "Select tags..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Search tags..." value={tagInput} onValueChange={setTagInput} />
-                          <CommandEmpty>No tag found.</CommandEmpty>
-                          <CommandGroup>
-                            {predefinedTags
-                              .filter(tag => tag.toLowerCase().includes(tagInput.toLowerCase()))
-                              .map(tag => (
-                                <CommandItem
-                                  key={tag}
-                                  onSelect={() => handleAddTag(tag)}
-                                >
-                                  <Check
-                                    className={`mr-2 h-4 w-4 ${editedNote.tags.includes(tag) ? "opacity-100" : "opacity-0"}`}
-                                  />
-                                  {tag}
-                                </CommandItem>
-                              ))}
-                          </CommandGroup>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {editedNote.tags.map(tag => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                          <button onClick={() => handleRemoveTag(tag)} className="ml-1">
-                            <X size={14} />
-                          </button>
-                        </Badge>
-                      ))}
+                    <Input
+                      name="title"
+                      value={Note.title}
+                      onChange={handleInputChange}
+                      placeholder="Title"
+                    />
+                    <Textarea
+                      name="description"
+                      value={Note.description}
+                      onChange={handleInputChange}
+                      placeholder="Description"
+                    />
+                    <Select
+                      value={Note.school}
+                      onValueChange={(value) => handleSelectChange('school', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a school" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {schools.map((school) => (
+                          <SelectItem key={school.id} value={school.id}>{school.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={Note.programme}
+                      onValueChange={(value) => handleSelectChange('programme', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a programme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableProgrammes.map((programme) => (
+                          <SelectItem key={programme.id} value={programme.id}>{programme.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={Note.course}
+                      onValueChange={(value) => handleSelectChange('course', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableCourses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div>
+                      <Popover open={isTagPopoverOpen} onOpenChange={setIsTagPopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <Input
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            placeholder="Search or add new tags"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <ul className="max-h-[200px] overflow-auto">
+                            {filteredTags.map((tag) => (
+                              <li
+                                key={tag}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleAddTag(tag)}
+                              >
+                                {tag}
+                              </li>
+                            ))}
+                            {filteredTags.length === 0 && tagInput && (
+                              <li
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleAddTag(tagInput)}
+                              >
+                                Add "{tagInput}"
+                              </li>
+                            )}
+                          </ul>
+                        </PopoverContent>
+                      </Popover>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {Note.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                            <button onClick={() => handleRemoveTag(tag)} className="ml-2">
+                              <X size={14} />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button onClick={handleSave} className="w-full">
+                        <Check className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </Button>
+                      <Button onClick={handleCancel} variant="outline" className="w-full">
+                        Cancel
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button onClick={handleSave} className="w-full">
-                      <Check className="h-4 w-4 mr-2" />
-                      Save Changes
-                    </Button>
-                    <Button onClick={handleCancel} variant="outline" className="w-full">
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
                 ) : (
                   <>
-                    <h1 className="text-3xl font-bold mb-4">{editedNote.title}</h1>
+                    <h1 className="text-3xl font-bold mb-4">{Note.title}</h1>
                     <div className="flex items-center mb-4">
                       <Image
                         src={noteData.authorIcon}
@@ -336,18 +353,18 @@ export default function NoteDetailsPage() {
                       <Calendar className="h-4 w-4 mr-2" />
                       <span>Added on {noteData.dateAdded}</span>
                     </div>
-                    <p className="mb-4" style={{ color: '#808080' }}>{editedNote.description}</p>
+                    <p className="mb-4" style={{ color: '#808080' }}>{Note.description}</p>
                     <div className="mb-4">
                       <h2 className="font-semibold mb-2">School</h2>
-                      <p>{editedNote.school}</p>
+                      <p>{Note.school}</p>
                     </div>
                     <div className="mb-4">
                       <h2 className="font-semibold mb-2">Programme</h2>
-                      <p>{editedNote.programme}</p>
+                      <p>{Note.programme}</p>
                     </div>
                     <div className="mb-4">
                       <h2 className="font-semibold mb-2">Course</h2>
-                      <p>{editedNote.course}</p>
+                      <p>{Note.course}</p>
                     </div>
                     <div className="mb-4">
                       <h2 className="font-semibold mb-2">Tags</h2>
@@ -366,10 +383,12 @@ export default function NoteDetailsPage() {
                         <Heart className={`h-5 w-5 mr-2 ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} />
                         <span>{likes} likes</span>
                       </Button>
-                      <Button variant="outline" onClick={handleEdit}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
+                      { user && (user.id === noteData.author || user.role === 'admin') && (
+                        <Button variant="outline" onClick={handleEdit}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   </>
                 )}

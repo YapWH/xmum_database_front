@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { DownloadButton } from '@/components/DownloadButton'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface Dataset{
   id: string
@@ -101,11 +102,6 @@ export default function ItemDetailPage() {
     loadData()
   }, [category, id])
 
-  const handleDownload = () => {
-    //TODO: Implement download logic here
-    console.log('Downloading item:', item?.title)
-  }
-
   const handleEdit = () => {
     setIsEditing(true)
   }
@@ -123,6 +119,16 @@ export default function ItemDetailPage() {
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tags = e.target.value.split(',').map(tag => tag.trim())
     setItem(prev => prev ? { ...prev, tags } : null)
+  }
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setItem(prev => prev ? { ...prev, [name]: value } : null)
+  }
+
+  const handleSubcategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setItem(prev => prev ? { ...prev, [name]: value } : null)
   }
 
   if (!item) {
@@ -244,7 +250,40 @@ export default function ItemDetailPage() {
               ) : (
                 <CardTitle className="text-3xl font-bold mb-6">{item.title}</CardTitle>
               )}
+              {isEditing ? (
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select value={item.category} onValueChange={(value) => handleCategoryChange({ target: { name: 'category', value } } as any)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Computer Vision">Computer Vision</SelectItem>
+                        <SelectItem value="Natural Language Processing">Natural Language Processing</SelectItem>
+                        <SelectItem value="Speech Recognition">Speech Recognition</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="subcategory">Subcategory</Label>
+                    <Select value={item.subcategory} onValueChange={(value) => handleSubcategoryChange({ target: { name: 'subcategory', value } } as any)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select subcategory" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Image Classification">Image Classification</SelectItem>
+                        <SelectItem value="Object Detection">Object Detection</SelectItem>
+                        <SelectItem value="Sentiment Analysis">Sentiment Analysis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              ) : (
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
+              )}
             </div>
             
           </CardHeader>
