@@ -18,14 +18,19 @@ const articles = [
 
 // Mock data for authors
 const authors = [
-  { id: 1, name: "Dr. Jane Smith", expertise: "AI and Machine Learning", image: "/placeholder.jpg" },
-  { id: 2, name: "Prof. John Doe", expertise: "Renewable Energy", image: "/placeholder.jpg" },
-  { id: 3, name: "Dr. Emily Brown", expertise: "Quantum Physics", image: "/placeholder.jpg" },
+  { id: 1, name: "Dr. Jane Smith", expertise: "AI and Machine Learning", image: "/icon.jpeg" },
+  { id: 2, name: "Prof. John Doe", expertise: "Renewable Energy", image: "/icon.jpeg" },
+  { id: 3, name: "Dr. Emily Brown", expertise: "Quantum Physics", image: "/icon.jpeg" },
 ]
 
 export default function ArticlesHomePage() {
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   useEffect(() => {
     // Simulate loading delay
     const timer = setTimeout(() => setLoading(false), 1500)
@@ -33,7 +38,7 @@ export default function ArticlesHomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="container mx-auto px-4 py-8">
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
@@ -59,6 +64,8 @@ export default function ArticlesHomePage() {
             <Input 
               type="search" 
               placeholder="Search articles..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-lg"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -66,115 +73,127 @@ export default function ArticlesHomePage() {
         </div>
 
         {/* Featured Article */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Featured Article</h2>
-          <Card className="hover:shadow-lg transition-shadow duration-300">
-            <div className="md:flex">
-              <div className="md:w-1/3">
-                <Image 
-                  src={articles[0].image}
-                  alt={articles[0].title}
-                  width={400} 
-                  height={300} 
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="md:w-2/3 p-6">
-                <CardTitle className="text-2xl mb-2">{articles[0].title}</CardTitle>
-                <CardDescription className="mb-4">{articles[0].description}</CardDescription>
-                <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                <div className="flex justify-between items-center">
-                  <Link href={`/articles/${articles[0].id}`}>
-                    <Button className="w-full">Read More</Button>
-                  </Link>
+        {searchTerm === '' && (
+          <section className="mb-12">
+            <h2 className="text-3xl font-semibold mb-6">Featured Article</h2>
+            <Card className="hover:shadow-lg transition-shadow duration-300">
+              <div className="md:flex">
+                <div className="md:w-1/3">
+                  <Image 
+                    src={articles[0].image}
+                    alt={articles[0].title}
+                    width={400} 
+                    height={300} 
+                    className="object-cover w-full h-full rounded-l-lg"
+                  />
+                </div>
+                <div className="md:w-2/3 p-6">
+                  <CardTitle className="text-2xl mb-2">{articles[0].title}</CardTitle>
+                  <CardDescription className="mb-4">{articles[0].description}</CardDescription>
+                  <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                  <div className="flex justify-between items-center">
+                    <Link href={`/articles/${articles[0].id}`}>
+                      <Button className="w-full">Read More</Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        </section>
+            </Card>
+          </section>
+        )}
 
-        <section className="mb-12">
-          <h2 className="text-3xl font-semibold mb-6">Featured Authors</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {authors.map((author) => (
-              <Card key={author.id} className="hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="text-center">
-                  {loading ? (
-                    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-300 animate-pulse"></div>
-                  ) : (
-                    <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
-                      <Image 
-                        src={author.image}
-                        alt={author.name}
-                        width={100} 
-                        height={100} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto"></div> : author.name}</CardTitle>
-                  <CardDescription>
-                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mt-2"></div> : `Expert in ${author.expertise}`}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <Link href={`/articles/author/${author.id}`}>
-                    <Button className="w-full">
-                      {loading ? <div className="w-full"></div> : 'More from Author'}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-semibold mb-6">Latest Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4"></div> : article.title}</CardTitle>
-                  <CardDescription>
-                    {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mt-2"></div> : article.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loading ? (
-                    <div className="space-y-2">
-                      <div className="h-4 bg-gray-300 rounded"></div>
-                      <div className="h-4 bg-gray-300 rounded"></div>
-                      <div className="h-4 bg-gray-300 rounded w-5/6"></div>
-                    </div>
-                  ) : (
-                    <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <Link href={`/articles/${article.id}`}>
+        {searchTerm === '' && (
+          <section className="mb-12">
+            <h2 className="text-3xl font-semibold mb-6">Featured Authors</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {authors.map((author) => (
+                <Card key={author.id} className="hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader className="text-center">
+                    {loading ? (
+                      <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-300 animate-pulse"></div>
+                    ) : (
+                      <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
+                        <Image 
+                          src={author.image}
+                          alt={author.name}
+                          width={100} 
+                          height={100} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto"></div> : author.name}</CardTitle>
+                    <CardDescription>
+                      {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mx-auto mt-2"></div> : `Expert in ${author.expertise}`}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <Link href={`/articles/author/${author.id}`}>
                       <Button className="w-full">
-                        {loading ? <div className="w-full"></div> : 'Read More'}
+                        {loading ? <div className="w-full"></div> : 'More from Author'}
                       </Button>
                     </Link>
-                    <div className="flex space-x-2">
-                      {['Technology', 'AI'].map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-200 rounded-full text-sm">
-                          {loading ? <div className="h-4 bg-gray-300 rounded w-12"></div> : tag}
-                        </span>
-                      ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-6">
+            {searchTerm === '' ? 'Latest Articles' : 'Search Results'}
+          </h2>
+          {filteredArticles.length === 0 ? (
+            <p className="text-center text-lg text-gray-600">No articles found matching your search.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {filteredArticles.map((article) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader>
+                    <CardTitle>{loading ? <div className="h-6 bg-gray-300 rounded w-3/4"></div> : article.title}</CardTitle>
+                    <CardDescription>
+                      {loading ? <div className="h-4 bg-gray-300 rounded w-1/2 mt-2"></div> : article.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {loading ? (
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-300 rounded"></div>
+                        <div className="h-4 bg-gray-300 rounded"></div>
+                        <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+                      </div>
+                    ) : (
+                      <p className="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    )}
+                    <div className="flex justify-between items-center">
+                      <Link href={`/articles/${article.id}`}>
+                        <Button className="w-full">
+                          {loading ? <div className="w-full"></div> : 'Read More'}
+                        </Button>
+                      </Link>
+                      <div className="flex space-x-2">
+                        {['Technology', 'AI'].map((tag, index) => (
+                          <span key={index} className="px-2 py-1 bg-gray-200 rounded-full text-sm">
+                            {loading ? <div className="h-4 bg-gray-300 rounded w-12"></div> : tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </section>
 
-        <div className="text-center mt-8">
-          <Link href="/articles/collection">
-            <Button className="w-18">Load More Articles</Button>
-          </Link>
-        </div>
+        {searchTerm === '' && (
+          <div className="text-center mt-8">
+            <Link href="/articles/collection">
+              <Button className="w-18">Load More Articles</Button>
+            </Link>
+          </div>
+        )}
       </main>
     </div>
   )
