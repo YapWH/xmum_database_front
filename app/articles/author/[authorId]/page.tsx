@@ -1,5 +1,11 @@
+'use client'
+
+import { useState} from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Search } from 'lucide-react'
+import Header from '@/components/Header'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -7,7 +13,7 @@ const author = {
   id: 1,
   name: 'Jane Doe',
   bio: 'Jane Doe is an expert in artificial intelligence and its applications in various industries.',
-  image: '/placeholder.jpg'
+  image: '/icon.jpeg'
 }
 
 const articles = [
@@ -20,17 +26,26 @@ const articles = [
 ]
 
 export default function AuthorPage({ params }: { params: { id: string } }) {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
+      <Header />
       <Card className="mb-8">
         <CardHeader className="flex flex-col sm:flex-row items-center">
-          <Image
-            src={author.image}
-            alt={author.name}
-            width={100}
-            height={100}
-            className="rounded-full mb-4 sm:mb-0 sm:mr-4"
-          />
+          <div className="w-24 h-24 mr-4 rounded-full overflow-hidden">
+            <Image 
+              src={author.image}
+              alt={author.name}
+              width={200} 
+              height={200} 
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div>
             <CardTitle className="text-3xl text-center sm:text-left">{author.name}</CardTitle>
             <CardDescription className="text-center sm:text-left">{author.bio}</CardDescription>
@@ -38,28 +53,45 @@ export default function AuthorPage({ params }: { params: { id: string } }) {
         </CardHeader>
       </Card>
 
+      <div className="max-w-2xl mx-auto mb-12">
+        <div className="relative">
+          <Input 
+            type="search" 
+            placeholder="Search articles..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 text-lg"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+        </div>
+      </div>
+
       <h2 className="text-2xl font-bold mb-4">Articles by {author.name}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.map((article) => (
-          <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
-            <Image
-              src={article.image}
-              alt={article.title}
-              width={400}
-              height={200}
-              className="w-full h-48 object-cover"
-            />
-            <CardHeader>
-              <CardTitle>{article.title}</CardTitle>
-              <CardDescription>{article.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href={`/article/${article.id}`} passHref>
-                <Button className="w-full">Read More</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
+        {filteredArticles.length === 0 ? (
+          <p className="text-center text-lg text-gray-600">No articles found matching your search.</p>
+        ) : (
+          filteredArticles.map((article) => (
+            <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
+              <Image
+                src={article.image}
+                alt={article.title}
+                width={400}
+                height={200}
+                className="w-full h-48 object-cover rounded-t-lg"
+              />
+              <CardHeader>
+                <CardTitle>{article.title}</CardTitle>
+                <CardDescription>{article.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link href={`/articles/${article.id}`} passHref>
+                  <Button className="w-full">Read More</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   )
