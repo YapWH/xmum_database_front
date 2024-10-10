@@ -205,13 +205,31 @@ export default function ItemDetailPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <Button 
-          variant="outline" 
-          onClick={() => router.back()} 
-          className="mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back
-        </Button>
+        <div className='flex items-center mb-6'>
+          <div>
+            <Button variant="outline" onClick={() => router.back()}>
+              <ArrowLeft className="mr-2 h-4 w-4" /> 
+              Back
+            </Button>
+          </div>
+          <div className="ml-auto flex items-center space-x-4">
+            <DownloadButton itemId={item.id} itemName={item.title} creatorName={item.uploader} />
+            <ReportForm itemId={item.id} itemTitle={item.title} />
+            {user && user.role === 'admin' && (
+              <Button onClick={isEditing ? handleSave : handleEdit}>
+                {isEditing ? (
+                  <>
+                    <Save className="mr-2 h-4 w-4" /> Save
+                  </>
+                ) : (
+                  <>
+                    <Edit className="mr-2 h-4 w-4" /> Edit
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
 
         <Card className="mt-8">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -228,23 +246,7 @@ export default function ItemDetailPage() {
               )}
               <CardDescription>{item.category} - {item.subcategory}</CardDescription>
             </div>
-            <div className="flex space-x-2">
-              <DownloadButton itemId={item.id} itemName={item.title} creatorName={item.uploader} />
-              <ReportForm itemId={item.id} itemTitle={item.title} />
-              {user && user.role === 'admin' && (
-                <Button onClick={isEditing ? handleSave : handleEdit}>
-                  {isEditing ? (
-                    <>
-                      <Save className="mr-2 h-4 w-4" /> Save
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
+            
           </CardHeader>
 
           <CardContent>

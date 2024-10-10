@@ -12,7 +12,6 @@ export default function UploadPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
     subcategory: '',
     tags: '',
     file: null as File | null,
@@ -43,7 +42,7 @@ export default function UploadPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <Header />
-        <h1 className="text-4xl font-bold mb-8">Upload Item</h1>
+        <h1 className="text-4xl font-bold mb-8">Upload Dataset</h1>
         <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
           <div>
             <Label htmlFor="title">Title</Label>
@@ -54,20 +53,7 @@ export default function UploadPage() {
             <Textarea id="description" name="description" value={formData.description} onChange={handleInputChange} required />
           </div>
           <div>
-            <Label htmlFor="category">Category</Label>
-            <Select onValueChange={(value) => handleSelectChange('category', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Dataset">Dataset</SelectItem>
-                <SelectItem value="Notes">Notes</SelectItem>
-                <SelectItem value="Articles">Articles</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="subcategory">Subcategory</Label>
+            <Label htmlFor="subcategory">Category</Label>
             <Select onValueChange={(value) => handleSelectChange('subcategory', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select subcategory" />

@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
+import { Button } from '@/components/ui/button'
+import { Upload } from 'lucide-react'
 
 // Mock data for schools
 const schools = [
@@ -30,14 +32,20 @@ export default function NotesHomePage() {
       <h1 className="text-6xl font-bold text-center mb-8">Notes</h1>
       
       {/* Search Bar */}
-      <div className="max-w-md mx-auto mb-12">
-        <Input
-          type="text"
-          placeholder="Search schools..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
+      <div className="flex justify-between items-center mb-12 space-x-10">
+          <Input
+            type="text"
+            placeholder="Search schools..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
+          <Link href="/notes/upload">
+            <Button>
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Notes
+            </Button>
+          </Link>
       </div>
       
       {/* School Cards */}

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ChevronLeft, Heart, NotebookText, Search } from 'lucide-react'
+import { ChevronLeft, Heart, NotebookText, Search, Upload } from 'lucide-react'
 import Header from '@/components/Header'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 
@@ -82,6 +82,14 @@ export default function SchoolNotesPage() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <div className="ml-auto flex items-center space-x-4">
+            <Link href="/notes/upload">
+              <Button>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Notes
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
