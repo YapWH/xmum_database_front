@@ -1,46 +1,63 @@
-import Link from 'next/link'
+'use client'
+
+import { useState} from 'react'
 import Image from 'next/image'
+import Header from '@/components/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-const articles = [
-  { id: 1, title: 'The Future of AI', description: 'Exploring the potential impact of artificial intelligence on various industries.', image: '/placeholder.jpg' },
-  { id: 2, title: 'Sustainable Energy Solutions', description: 'Innovative approaches to renewable energy and their global implications.', image: '/placeholder.jpg' },
-  { id: 3, title: 'The Rise of Quantum Computing', description: 'Understanding the principles and applications of quantum computing technology.', image: '/placeholder.jpg' },
-  { id: 4, title: 'Cybersecurity in the Digital Age', description: 'Strategies for protecting data and privacy in an increasingly connected world.', image: '/placeholder.jpg' },
-  { id: 5, title: 'Advancements in Biotechnology', description: 'Recent breakthroughs in genetic engineering and their potential medical applications.', image: '/placeholder.jpg' },
-  { id: 6, title: 'The Future of Work', description: 'How technology and global trends are reshaping the workplace and job market.', image: '/placeholder.jpg' },
-]
+const article = {
+  id: 1,
+  title: 'The Future of AI',
+  author: 'Jane Doe',
+  date: '2023-06-01',
+  abstract: 'This article explores the potential impact of artificial intelligence on various industries, discussing both the opportunities and challenges that lie ahead.',
+  content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  image: '/placeholder.jpg',
+  pdfUrl: '/sample.pdf',
+  websiteUrl: 'https://example.com/article'
+}
 
-export default function ArticlesPage() {
+export default function ArticlePage({ params }: { params: { id: string } }) {
+  const [showPdf, setShowPdf] = useState(false)
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Articles</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.map((article) => (
-          <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
-            <Image
-              src={article.image}
-              alt={article.title}
-              width={400}
-              height={200}
-              className="w-full h-48 object-cover"
-            />
-            <CardHeader>
-              <CardTitle>{article.title}</CardTitle>
-              <CardDescription>{article.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href={`/article/${article.id}`} passHref>
-                <Button className="w-full">Read More</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <div className="text-center mt-8">
-        <Button className="w-18">Load More Articles</Button>
-      </div>
+      <Header />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-3xl">{article.title}</CardTitle>
+          <CardDescription>By {article.author} | Published on {article.date}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Image
+            src={article.image}
+            alt={article.title}
+            width={800}
+            height={400}
+            className="w-full h-64 object-cover mb-4"
+          />
+          <h2 className="text-xl font-semibold mb-2">Abstract</h2>
+          <p className="mb-4">{article.abstract}</p>
+          <h2 className="text-xl font-semibold mb-2">Article Preview</h2>
+          <p className="mb-4">{article.content}</p>
+        </CardContent>
+      </Card>
+
+      {article.pdfUrl ? (
+        <div className="mb-8">
+          <Button onClick={() => setShowPdf(!showPdf)} className="mb-4">
+            {showPdf ? 'Hide PDF Preview' : 'Show PDF Preview'}
+          </Button>
+          {showPdf && (
+            <iframe src={article.pdfUrl} className="w-full h-screen"></iframe>
+          )}
+        </div>
+      ) : (
+        <Button className="mb-8" asChild>
+          <a href={article.websiteUrl} target="_blank" rel="noopener noreferrer">Visit Website</a>
+        </Button>
+      )}
     </div>
   )
 }
